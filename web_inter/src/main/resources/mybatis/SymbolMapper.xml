@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 系统配置 -->
+<mapper namespace="SymbolMapper">
+    <select id="selectFinalValueBySymbol" parameterType="map" resultType="map">
+        SELECT * FROM tbl_symbol WHERE symbol=#{symbol}
+    </select>
+    <select id="selSymbol" parameterType="map" resultType="map">
+        SELECT  * FROM  tbl_symbol
+    </select>
+    <select id="selSymbolFilter" parameterType="map" resultType="map">
+        SELECT * FROM tbl_symbol
+        WHERE symbol NOT in (
+          SELECT symbol from tbl_use_symbol WHERE login_id = #{login_id} AND service_type = #{type}
+        )  AND group_name = #{group_name}
+    </select>
+    <select id="getUseSymbol" parameterType="map" resultType="map">
+      SELECT DISTINCT s.* from tbl_use_symbol us ,tbl_symbol s WHERE us.symbol = s.symbol and us.login_id = #{login_id} AND us.service_type = #{type}
+    </select>
+    <insert id="addUseSymbol" parameterType="map">
+      INSERT INTO `tbl_use_symbol` (`login_id`, `service_type`, `symbol`) VALUES (#{login_id}, #{type}, #{symbol})
+    </insert>
+    <delete id="delUseSymbol" parameterType="map">
+      DELETE FROM `tbl_use_symbol` WHERE (`login_id`=#{login_id} AND `service_type`=#{type} AND `symbol`=#{symbol})
+    </delete>
+
+</mapper>
+

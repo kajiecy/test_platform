@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 系统配置 -->
+<mapper namespace="OrderMapper">
+    <select id="selOrderList" parameterType="map" resultType="map">
+        SELECT * FROM `tbl_order` WHERE login_id = #{login_id}
+    </select>
+    <select id="selOrderListById" parameterType="map" resultType="map">
+        SELECT * FROM `tbl_order` WHERE id = #{id}
+    </select>
+    <update id="upOrderList" parameterType="map">
+        UPDATE tbl_order
+        SET
+        stoploss=#{sl}
+        ,takeprofit=#{tp}
+        <if test="price!=null">
+            ,price = #{price}
+        </if>
+        WHERE id = #{id}
+    </update>
+    <select id="selectSumMargin" parameterType="map" resultType="map">
+        SELECT sum(o2.volume * s2.margin ) AS margin_all
+        FROM (
+               SELECT
+                 o.symbol,
+                 MAX(o.volume) AS volume
+               FROM (
+                      SELECT
+                        orders.symbol AS symbol,
+                        orders.volume AS volume
+                      FROM tbl_order orders
+                      WHERE orders.login_id = #{login_id,jdbcType=INTEGER}
+                            AND orders.command = 0
+                      UNION ALL
+                      SELECT
+                        orders.symbol AS symbol,
+                        orders.volume AS volume
+                      FROM tbl_order orders
+                      WHERE orders.login_id =  #{login_id,jdbcType=INTEGER}
+                            AND orders.command = 1
+                    ) AS o
+               GROUP BY o.symbol
+             ) AS o2, tbl_symbol AS s2
+        WHERE o2.symbol = s2.symbol
+    </select>
+</mapper>
+

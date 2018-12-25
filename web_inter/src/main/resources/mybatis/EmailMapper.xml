@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="EmailMapper">
+  <select id="selectInfo" parameterType="map" resultType="map">
+      SELECT tbl_email.* FROM tbl_email WHERE login_id=${loginId} AND server_type=#{serverType}
+  </select>
+</mapper>

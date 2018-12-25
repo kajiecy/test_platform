@@ -1,0 +1,41 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="web_runner:war exploded">
+    <output-path>$PROJECT_DIR$/web_runner/target/web_runner</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="web_runner" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="archive" name="base_module-1.0.jar">
+            <element id="module-output" name="base_module" />
+          </element>
+          <element id="archive" name="base_dao-1.0.jar">
+            <element id="module-output" name="base_dao" />
+          </element>
+          <element id="archive" name="base_po-1.0.jar">
+            <element id="module-output" name="base_po" />
+          </element>
+          <element id="library" level="project" name="Maven: org.jsoncloud.framework:base-web:1.0" />
+          <element id="library" level="project" name="Maven: org.jsoncloud.framework:base-allpay:1.0" />
+          <element id="library" level="project" name="Maven: commons-lang:commons-lang:2.6" />
+          <element id="archive" name="base_soap-1.0.jar">
+            <element id="module-output" name="base_soap" />
+          </element>
+          <element id="library" level="project" name="Maven: axis:axis:1.4" />
+          <element id="library" level="project" name="Maven: axis:axis-ant:1.4" />
+          <element id="library" level="project" name="Maven: commons-logging:commons-logging:1.2" />
+          <element id="library" level="project" name="Maven: javax.activation:activation:1.1.1" />
+          <element id="library" level="project" name="Maven: javax.mail:mail:1.5.0-b01" />
+          <element id="library" level="project" name="Maven: org.jsoncloud.framework:base-core:1.0.1" />
+          <element id="library" level="project" name="Maven: org.jsoncloud.framework:base-redis:1.0" />
+          <element id="library" level="project" name="Maven: org.jsoncloud.framework:base-storage:1.0" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/web_runner/target/web_runner/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="javaee-facet-resources" facet="web_runner/web/Web" />
+    </root>
+  </artifact>
+</component>

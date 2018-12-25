@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="assets/js/com.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
+    <!--<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>-->
+    <!--<script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>-->
+    <script src="assets/js/bootstrap.js"></script>
+    <!-- include summernote css/js-->
+    <link href="assets/summernote/summernote.css" rel="stylesheet">
+    <script src="assets/summernote/summernote.js"></script>
+</head>
+<body>
+<section class="wrapper">
+    <!-- <h3><i class="fa fa-angle-right"></i> Form Components</h3> -->
+    <div class="row mt">
+        <div class="col-lg-12">
+            <div class="form-panel">
+                <h4 class="mb"><i class="fa fa-angle-right"></i> 新闻</h4>
+                <form class="form-horizontal style-form" method="get">
+                    <div class="form-group" style="display: none">
+                        <label class="col-sm-2 col-sm-2 control-label">用户Id</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="id" class="form-control round-form" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">标题</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="title" class="form-control round-form">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">副标题</label>
+                        <div class="col-sm-10">
+                            <!--<input type="text" id="sectitle" class="form-control round-form">-->
+                            <textarea rows="5" id="sectitle" style="width: 90%"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">标题图片</label>
+                        <div class="col-sm-10">
+                            <!--<input type="text" id="title_img" class="form-control round-form">-->
+                            <div id="upload" style="display: none">上传</div>
+                            <input id="img" name="img_url" hidden/>
+                            <div style="position:relative;display: inline-block;">
+                                <img style="width: 200px;height:140px" id="img_all"/>
+                                <input type="button" id="sys01" onclick="upload_img.upload_btn(this,'img_url')"
+                                       value="选择图片"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">作者</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="author" class="form-control round-form">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">内容</label>
+                        <div class="col-sm-10">
+                            <!--<textarea id="content" class="form-control" rows="10"></textarea>-->
+                            <div class="content" id="summernote"></div>
+                            <!--<div id="summernote" name="detail"></div>-->
+                        </div>
+                    </div>
+                    <div class="form-group time">
+                        <label class="col-sm-2 col-sm-2 control-label">添加日期</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="createTime" class="form-control round-form" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group time">
+                        <label class="col-sm-2 col-sm-2 control-label">修改日期</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="updateTime" class="form-control round-form" disabled>
+                        </div>
+                    </div>
+                    <div style="text-align: center">
+                        <button type="button" class="btn btn-danger btn-sm btn-block"
+                                style="display: -webkit-inline-box;width: 15%;" id="update-btn">修改
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm btn-block"
+                                style="display: -webkit-inline-box;width: 15%;" id="save-btn">提交
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm"
+                                style="display: -webkit-inline-box;width: 15%;" id="delete-btn">删除
+                        </button>
+                        <button type="button" class="btn btn-success btn-sm btn-block"
+                                style="display: -webkit-inline-box;width: 15%;margin-top: 5px" id="back-btn">返回
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div><!-- col-lg-12-->
+    </div>
+    <!-- 更换管理员 -->
+</section>
+</body>
+</html>
+<script>
+    //custom select box
+    var div
+    $(function () {
+        div =  $(".content");
+        div.summernote({
+            height: 500,
+            toolbar: [
+                // [groupName, [list of button]]
+                ['style', ['bold', 'italic', 'underline', 'clear']],
+                ['font', ['strikethrough', 'superscript', 'subscript']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture']],
+                ['view', ['fullscreen', 'codeview']]
+            ],
+            callbacks: {
+                onImageUpload: function (files) { //the onImageUpload API
+                    console.log("files", files);
+                    readFile(files[0], function (img) {
+                        //                        $('#summernote').summernote('insertNode',img);
+                        uploadImg({
+                            imgStr: com.util.upB64(img.src)
+                            , suffix: files[0].name
+                        }, function (url_) {
+                            div.summernote('editor.insertImage', url_); // the insertImage API
+                        })
+                    })
+                }
+            }
+        });
+//        var params = GetRequestParams();
+//        console.log(params);
+        var newsId = window.sessionStorage.getItem("newsId")
+        window.sessionStorage.removeItem("newsId");
+        if (newsId != undefined && newsId != null) {
+            $("#save-btn").hide();
+            $("#update-btn").show()
+            $(".time").show()
+            var token = window.sessionStorage.token;
+            var data = {
+                "id": newsId
+            }
+            if (token != undefined && token != "") {
+                data.login_token = token
+            }
+            // 获取新闻详细信息
+            $.ajax({
+                type: "POST",
+                url: "mvc/news/info",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(data),
+                success: function (result) {
+                    if (result.code == 0) {
+                        var news = result.data.info;
+                        console.log(news)
+                        $("#id").val(news.id);
+                        $("#title").val(news.title);
+                        $("#author").val(news.author);
+                        $("#sectitle").val(news.secTitle);
+                        $("#img_all").attr("src", news.titleImg);
+                        $("#img").val(news.titleImg);
+//                        $("#content").val(news.content);
+                        div.summernote('code', news.content);
+                        $("#createTime").val(news.createTime);
+                        $("#updateTime").val(news.updateTime);
+
+                    } else if (result.code == 2000) {
+                        alert(result.message);
+                        window.location.href = "login.html";
+                    }
+                }
+            });
+        } else {
+            console.log("新增")
+            $("#save-btn").show();
+            $("#update-btn").hide()
+            $("#delete-btn").hide()
+            $(".time").hide();
+        }
+
+        $("#back-btn").click(function () {
+            $("#main-content").load("news/table.html");
+        })
+
+    });
+
+    // 新增
+    $("#save-btn").click(function () {
+        var token = window.sessionStorage.token;
+        var news = {
+            "login_token": token
+        }
+        if (div.summernote('isEmpty')) {
+            alert("内容不能为空")
+            return;
+        }
+        news.title = $("#title").val();
+        news.author = $("#author").val();
+        news.secTitle = $("#sectitle").val();
+        news.titleImg = $("#img").val();
+        news.content = div.summernote('code');
+        console.log(news)
+
+        $.ajax({
+            type: "POST",
+            url: "mvc/news/save",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(news),
+            success: function (result) {
+                console.log(result)
+                if (result.code == 0) {
+                    alert("成功")
+                    $("#main-content").load("news/table.html")
+                } else if (result.code == 2000) {
+                    alert(result.message);
+                    window.location.href = "login.html";
+                }
+            }
+        });
+    })
+
+    // 修改新闻信息
+    $("#update-btn").click(function (event) {
+        var token = window.sessionStorage.token;
+        var news = {
+            "login_token": token
+        }
+
+        if (div.summernote('isEmpty')) {
+            alert("内容不能为空")
+            return;
+        }
+        news.id = $("#id").val();
+        news.title = $("#title").val();
+        news.author = $("#author").val();
+        news.secTitle = $("#sectitle").val();
+        news.titleImg = $("#img").val();
+        news.content = div.summernote('code');
+        console.log(news)
+
+        $.ajax({
+            type: "POST",
+            url: "mvc/news/update",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(news),
+            success: function (result) {
+                if (result.code == 0) {
+                    alert("成功")
+                    $("#main-content").load("news/table.html");
+                } else if (result.code == 2000) {
+                    alert(result.message);
+                    window.location.href = "login.html";
+                }
+            }
+        });
+    });
+    //删除
+    $("#delete-btn").click(function (event) {
+        if (confirm("删除后不可回复你确定要删除吗？")) {
+
+            var token = window.sessionStorage.token;
+            var news = {
+                "login_token": token
+            }
+
+            news.ids = $("#id").val();
+
+            console.log(news)
+
+            $.ajax({
+                type: "POST",
+                url: "mvc/news/delete",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(news),
+                success: function (result) {
+                    if (result.code == 0) {
+                        alert("成功")
+                        $("#main-content").load("news/table.html");
+                    } else if (result.code == 2000) {
+                        alert(result.message);
+                        window.location.href = "login.html";
+                    }
+                }
+            });
+
+        }
+
+    });
+
+    var upload_img = {
+        obj: null
+        , now_btn: null
+        , upload_ok: function (sourcesLink) {
+            console.log("上传成功：" + sourcesLink);
+            switch (this.now_btn) {
+                case "img_url":
+                    console.log("img_url上传成功：" + sourcesLink);
+                    $("#img_all").attr('src', sourcesLink);
+                    $("#img").val(sourcesLink);
+                    break;
+                case "img_url2":
+                    console.log("img_url上传成功：" + sourcesLink);
+                    $("#img_all2").attr('src', sourcesLink);
+                    $("#img_url2").val(sourcesLink);
+                    break;
+            }
+        }
+        , upload_btn: function (obj, btn_now) {
+            this.now_btn = btn_now;
+            upload_img.obj.sel_file();
+            console.log("点击了");
+        }
+        , init: function () {
+            var load_1 = null;
+            this.obj = com.qiniu.init("upload", {
+                do_getuptoken: function (file_name, fun_ok) {
+                    //必须是同步请求,返回 fun_ok( 上传的uptoken,文件的名称（唯一）key,访问的域名cname ,存储的仓库名称 brunt );
+                    var uptokenInfo = {};
+                    var data = {
+                        "login_token": window.sessionStorage.token,
+                        "name": file_name
+                    }
+                    $.ajax({
+                        type: "POST",
+                        url: "mvc/qiNiu/getQiniuToken",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        async: false,
+                        data: JSON.stringify(data),
+                        success: function (result) {
+                            uptokenInfo["token"] = result.data.uptoken;
+                            uptokenInfo["key"] = result.data.key;
+                            uptokenInfo["cname"] = result.data.domain;
+                            uptokenInfo["brunt"] = result.data.scope;
+                            console.log(uptokenInfo)
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
+                    return uptokenInfo;
+                }
+                , do_filesadd: function (up, files) {
+                    plupload.each(files, function (file) {
+//                        alert(JSON.stringify(file));
+                        // 文件添加进队列后，处理相关的事情
+                        // 每个文件上传前，处理相关的事情
+                        if (!confirm('确定上传：' + file.name + '\n 文件大小:' + file.size + '')) {
+                            up.stop();
+                            up.removeFile(file.id);
+                        } else {
+                            up.start();
+                        }
+                    });
+                }
+                , do_success: function (up, file, sourceLink) {
+                    upload_img.upload_ok(sourceLink);
+                    //完成就自动移除队列中
+                    up.removeFile(file.id);
+                }
+                , do_progress: function (bfb) {
+                    console.log("----jd:" + bfb);
+                }
+                , do_error: function (errTip, err) {
+                    console.log("----errTip:" + errTip);
+                    console.error(err);
+                }
+                , do_beforup: function (up, file) {
+//                    load_1=layer.load(1);
+                }
+                , do_complete: function () {
+                    console.log("----jd_ok");
+//                    layer.close(load_1);
+                }
+                , filter: com.qiniu.filters.img
+            });
+        }
+    }
+    upload_img.init();
+
+
+    //    $(document).ready(function () {
+    //初始化数据
+    //        $('#summernote').summernote({
+    //            width: 380,
+    //            height: 600,                 // set editor height
+    //            minHeight: null,             // set minimum height of editor
+    //            maxHeight: null,             // set maximum height of editor
+    //            focus: true,                  // set focus to editable area after initializing summernote
+    //            callbacks: {
+    //                onImageUpload: function (files) { //the onImageUpload API
+    //                    console.log("files", files);
+    //                    readFile(files[0], function (img) {
+    ////                        $('#summernote').summernote('insertNode',img);
+    //                        uploadImg({
+    //                            imgStr: com.util.upB64(img.src)
+    //                            , suffix: files[0].name
+    //                        }, function (url_) {
+    //                            $("#summernote").summernote('insertImage', url_, ""); // the insertImage API
+    //                        })
+    //                    })
+    //                }
+    //            }
+    //        });
+
+    //        $.ajax({
+    //            url: "spring-mvc/media/media/getCollectByType.json",
+    //            type: "post",
+    //            data: {id: id},
+    //            success: function (result) {
+    //                var node = document.getElementById("summernote");
+    //                $('#summernote').summernote('code', result.data.getCollectByType[0].detail);
+    //                document.title = result.data.getCollectByType[0].title;
+    //            }
+    //        })
+    //    });
+    //
+
+
+    function readFile(file, fun_success) {
+//        var file = this.files[0];
+        //这里我们判断下类型如果不是图片就返回 去掉就可以上传任意文件
+        if (!/image\/\w+/.test(file.type)) {
+            alert("请确保文件为图像类型");
+            return false;
+        }
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function (e) {
+            var img = new Image,
+                width = 640,    //图片resize宽度
+                quality = 0.8,  //图像质量
+                canvas = document.createElement("canvas"),
+                drawer = canvas.getContext("2d");
+            img.src = this.result;
+            if (width > img.width) {
+                fun_success(img);
+                return;
+            }
+            canvas.width = width;
+            canvas.height = width * (img.height / img.width);
+            drawer.drawImage(img, 0, 0, canvas.width, canvas.height);
+            img.src = canvas.toDataURL("image/jpeg", quality);
+            console.log("return_img:" + img.outerHTML);
+            fun_success(img);
+        }
+    }
+
+    function uploadImg(data, fun_success_){
+        data["login_token"] = window.sessionStorage.token;
+        $.ajax({
+            type: "POST",
+            url: "mvc/qiNiu/getQiniuToken2",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            async: false,
+            data: JSON.stringify(data),
+            success: function (result){
+                console.log("图片上传成功：", result);
+                var url = result.data.imgUrl;
+                fun_success_(url);
+            },
+            error: function(){
+                alert('图片插入失败');
+            }
+        });
+    }
+
+</script>

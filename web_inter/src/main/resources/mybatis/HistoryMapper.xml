@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="HistoryMapper">
+
+    <select id="selectHistoryListByLoginId" resultType="map" parameterType="map">
+      SELECT his.*,sy.digits sdigits FROM tbl_history his,tbl_symbol sy WHERE login_id=#{loginId,jdbcType=INTEGER} AND sy.symbol = his.symbol
+      <if test="beginTime != null and endTime == null">
+          AND close_time = #{beginTime}
+      </if>
+      <if test="beginTime != null and endTime != null">
+          AND close_time > #{beginTime} AND close_time <![CDATA[<]]>  #{endTime}
+      </if>
+    </select>
+
+    <!-- 获取用户历史盈亏值总和 -->
+    <select id="selectRecord" parameterType="map" resultType="map">
+        SELECT sum(profit) AS profit
+        FROM tbl_history
+        WHERE login_id = #{loginId,jdbcType=INTEGER}
+        <if test="cmdList != null">
+            AND cmd IN
+            <foreach collection="cmdList" item="cmd" open="(" close=")" separator=",">
+                #{cmd}
+            </foreach>
+            <if test="type =='outOfGold'">
+                AND profit <![CDATA[<]]> 0
+            </if>
+            <if test="type == 'inOfGold'">
+                AND profit > 0
+            </if>
+        </if>
+    </select>
+</mapper>

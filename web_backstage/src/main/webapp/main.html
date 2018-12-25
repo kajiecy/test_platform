@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="wenka">
+    <meta name="keyword" content="mt4">
+
+    <title>MT4</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <!--external css-->
+    <link href="assets/font-awesome/css/font-awesome.css" rel="stylesheet"/>
+
+    <!-- Custom styles for this template -->
+    <link href="assets/css/style.css" rel="stylesheet">
+    <link href="assets/css/style-responsive.css" rel="stylesheet">
+    <link href="assets/css/page.css" rel="stylesheet">
+    <link href="assets/css/style-responsive.css" rel="stylesheet">
+
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <script src="assets/js/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="assets/js/page.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+
+    <script src="assets/js/qiniu/plupload.full.min.js"></script>
+    <script src="assets/js/qiniu/qiniu.min.js"></script>
+    <script src="assets/js/qiniu/com.qiniu.js"></script>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+
+    <![endif]-->
+
+</head>
+
+<body>
+
+<section id="container">
+    <!--header start-->
+    <header class="header black-bg">
+        <div class="sidebar-toggle-box">
+            <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
+        </div>
+        <!--logo start-->
+        <a href="main.html" class="logo"><b>MT4</b></a>
+        <!--logo end-->
+        <!--<div class="top-menu">-->
+        <!--<ul class="nav pull-right top-menu">-->
+        <!--<li><a class="logout" href="#">Logout</a></li>-->
+        <!--</ul>-->
+        <!--</div>-->
+    </header>
+    <!--header end-->
+
+    <!--sidebar start-->
+    <aside>
+        <div id="sidebar" class="nav-collapse ">
+            <!-- sidebar menu start-->
+            <ul class="sidebar-menu" id="nav-accordion">
+
+                <p class="centered"><a href="#" class="view-myself-info"><img src="assets/img/gerenxinxi.png"
+                                                                              class="img-circle" width="60"></a></p>
+                <h5 class="centered" id="login-name">MT4</h5>
+
+                <!-- <li class="mt">
+                    <a href="index.html">
+                        <i class="fa fa-dashboard"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li> -->
+
+                <li class="sub-menu">
+                    <a href="javascript:;">
+                        <img src="assets/img/huiyuan.png" style="width: 20px;height: 20px">
+                        <span>会员</span>
+                    </a>
+                    <ul class="sub">
+                        <li class="menu" data-url="user/table.html"><a href="#">会员列表</a></li>
+                        <li class="menu" data-url="userGroup/table.html" id="usergroup-manager-menu"><a href="#">管理会员组</a></li>
+                    </ul>
+                </li>
+                <li class="sub-menu">
+                    <a href="javascript:;">
+                        <img src="assets/img/xinwen.png" style="width: 20px;height: 20px">
+                        <span>新闻</span>
+                    </a>
+                    <ul class="sub">
+                        <li class="menu" data-url="news/table.html"><a href="#">新闻列表</a></li>
+                        <li class="menu" data-url="news/info.html"><a href="#">添加新闻</a></li>
+                    </ul>
+                </li>
+                <li class="sub-menu"  id="serivce-manager-menu">
+                    <a href="javascript:;">
+                        <img src="assets/img/fuwu.png" style="width: 20px;height: 20px">
+                        <span>服务器</span>
+                    </a>
+                    <ul class="sub">
+                        <li class="menu" data-url="service/table.html"><a href="#">服务器列表</a></li>
+                        <li class="menu" data-url="service/info.html"><a href="#">添加服务器</a></li>
+                    </ul>
+                </li>
+                <li class="sub-menu"  id="group-manager-menu">
+                    <a href="javascript:;">
+                        <img src="assets/img/zu.png" style="width: 20px;height: 20px">
+                        <span>组配置</span>
+                    </a>
+                    <ul class="sub">
+                        <li class="menu" data-url="serverGroup/real.html"><a href="#">组配置列表</a></li>
+                    </ul>
+                </li>
+                <li class="sub-menu" style="display: none">
+                    <a href="javascript:;">
+                        <i class="fa fa-tasks"></i>
+                        <span>客服</span>
+                    </a>
+                    <ul class="sub">
+                        <li class="menu" data-url="chat/index.html"><a href="#">会话列表</a></li>
+                    </ul>
+                </li>
+                <li class="sub-menu" id="admin-manager-menu">
+                    <a href="javascript:;">
+                        <img src="assets/img/guanliyuan.png" style="width: 20px;height: 20px">
+                        <span>管理员</span>
+                    </a>
+                    <ul class="sub">
+                        <li class="menu" data-url="admin/table.html"><a href="#">管理员列表</a></li>
+                        <li class="menu" data-url="admin/info.html"><a href="#">添加管理员</a></li>
+                    </ul>
+                </li>
+                <li class="sub-menu">
+                    <a class="logout" href="#">
+                        <img src="assets/img/zhuxiao.png" style="width: 20px;height: 20px">
+                        <span>注销</span>
+                    </a>
+                </li>
+            </ul>
+            <!-- sidebar menu end-->
+        </div>
+    </aside>
+    <!--sidebar end-->
+    <!--main content start-->
+    <section id="main-content">
+
+    </section><!-- /MAIN CONTENT -->
+
+    <!--main content end-->
+
+</section>
+
+<!-- js placed at the end of the document so the pages load faster -->
+<script src="assets/js/jquery.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
+<script class="include" type="text/javascript" src="assets/js/jquery.dcjqaccordion.2.7.js"></script>
+<script src="assets/js/jquery.scrollTo.min.js"></script>
+<script src="assets/js/jquery.nicescroll.js" type="text/javascript"></script>
+
+
+<!--common script for all pages-->
+<script src="assets/js/common-scripts.js"></script>
+<script src="assets/js/vue.js"></script>
+<!--script for this page-->
+
+<script type="text/javascript">
+
+    $(function () {
+        // 判断是够为超级管理员，隐藏菜单项
+        var super_admin = window.sessionStorage.getItem("super_admin")
+        if (super_admin == 'false') {
+            $("#admin-manager-menu").hide()
+            $("#serivce-manager-menu").hide()
+            $("#usergroup-manager-menu").hide()
+            $("#group-manager-menu").hide()
+        } else {
+            $("#admin-manager-menu").show()
+            $("#serivce-manager-menu").show()
+            $("#usergroup-manager-menu").show()
+            $("#group-manager-menu").show()
+        }
+
+        // 读取登录人的用户信息
+        $("#login-name").html(window.sessionStorage.getItem("username"))
+
+        $("#main-content").load("user/table.html");
+
+        $(".menu").on("click", function () {
+            $(".sub-menu a").removeClass("active")
+            var url = this.dataset.url;
+            $("#main-content").load(url);
+        })
+
+        $(".logout").click(function (event) {
+            window.sessionStorage.clear();
+            window.location.href = "login.html"
+        });
+
+        $(".view-myself-info").click(function () {
+            var id = window.sessionStorage.getItem("id")
+            window.sessionStorage.setItem("adminId", id);
+            window.sessionStorage.setItem("admin-type", 'edit-myself');
+            $("#main-content").load("admin/info.html");
+        })
+    })
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="UserGroupMapper">
+    <select id="selectList" parameterType="map" resultType="map">
+        SELECT
+        tug.id,
+        tug.group_name,
+        count(tu.id) AS uid
+        FROM tbl_user_group tug LEFT JOIN tbl_user tu
+        ON tug.id = tu.user_group_id
+        WHERE 1= 1
+        <if test="param!=null">
+            AND tug.group_name LIKE #{param}
+        </if>
+        GROUP BY tug.id, tug.group_name
+        ORDER BY tug.update_time DESC ,tug.create_time DESC
+    </select>
+</mapper>

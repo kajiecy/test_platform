@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<section class="wrapper">
+    <div class="row mt">
+        <div class="col-lg-12" style="margin: 10px 0">
+            <button type="button" class="btn btn-success" data-toggle="modal" id="addNews"
+                    style="float: left;">
+                添加新闻
+            </button>
+        </div>
+        <div class="col-lg-12">
+            <div class="input-group search-input" style="float: left;">
+               <span class="input-group-addon" id="basic-addon1">
+                 <i class="fa fa-search" aria-hidden="true"></i>标题
+               </span>
+                <input type="text" name="search-input" class="form-control" placeholder="搜索..."
+                       aria-describedby="basic-addon1" id="search-param">
+            </div>
+            <button type="button" class="btn btn-success" style="float: left;" id="search-btn">
+                搜索
+            </button>
+        </div>
+        <div class="col-lg-12">
+            <div class="content-panel">
+                <h4><i class="fa fa-angle-right"></i> 新闻列表</h4>
+                <section id="unseen">
+                    <table class="table table-bordered table-striped table-condensed">
+                        <thead>
+                        <tr>
+                            <th><input type="checkbox" id="all"></th>
+                            <th>#</th>
+                            <th style="width: 150px">标题</th>
+                            <th style="width: 200px">副标题</th>
+                            <th>作者</th>
+                            <th>create_time</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </section>
+                <div>
+                    <div class="btn-group btn-group-xs" role="group" aria-label="...">
+                        <button type="button" class="btn btn-default" id="delete-btn">删除所选</button>
+                    </div>
+                </div>
+            </div><!-- /content-panel -->
+        </div><!-- /col-lg-4 -->
+    </div><!-- /row -->
+</section>
+<! --/wrapper -->
+<div>
+    <div style="float: left;width: 10%;margin: 5px;" class="input-group input-group-sm">
+        <span class="input-group-addon" id="basic-addon3">跳转到</span>
+        <input type="number" class="form-control" id="currentPage" value="1" aria-describedby="basic-addon3">
+    </div>
+    <button type="button" class="btn btn-success" style="float: left;font-size: 1px; margin-top: 4px;" id="page-go-btn">
+        跳转
+    </button>
+    <div class="input-group input-group-sm" style="float: left;width: 10%;margin: 5px;">
+        <span class="input-group-addon">共</span>
+        <input type="text" id="totalCount" disabled class="form-control" aria-label="Amount (to the nearest dollar)">
+        <span class="input-group-addon">条</span>
+    </div>
+    <div>
+        <ul class="page" id="page"></ul>
+    </div>
+    <div class="input-group input-group-sm" style="width: 15%;margin: 5px;float: left">
+        <select aria-describedby="basic-addon2" id="select-div" class="form-control">
+            <option value="25" selected> 25</option>
+            <option value="50"> 50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+            <option value="400">400</option>
+            <option value="800">800</option>
+            <option value="1000">1000</option>
+        </select>
+        <span class="input-group-addon" id="basic-addon2">行/页</span>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+
+    function formatStr(v) {
+        if (v) {
+            return v
+        } else {
+            return ""
+        }
+    }
+
+    $(function () {
+
+        // 搜索
+        $("#search-btn").click(function () {
+            listUser(undefined, 1, $("#select-div").find('option:selected').val());
+        })
+
+        // 添加新闻
+        $("#addNews").click(function () {
+            $("#main-content").load("news/info.html");
+        })
+
+        // 跳转页面
+        $("#page-go-btn").click(function () {
+            var num_ = $("#currentPage").val();
+            if (isNaN(parseInt(num_))) {
+                $("#currentPage").val(1)
+            }
+            listUser(undefined, $("#currentPage").val(), $("#select-div").find('option:selected').val());
+        })
+
+        // 更改每页的行数
+        $("#select-div").change(function () {
+            listUser(undefined, 1, $("#select-div").find('option:selected').val())
+        })
+
+        // 全选、 全不选
+        $("#all").click(function () {
+            if (this.checked) {
+                $(":checkbox").attr("checked", "checked");
+            } else {
+                $(":checkbox").removeAttr("checked")
+            }
+            ;
+        })
+        // 删除
+        $("#delete-btn").bind("click", function () {
+            var valArr = new Array;
+            $("input[name=choice]:checked").each(function (i) {
+                valArr[i] = $(this).val();
+            });
+            deleteNews(valArr.join(','))
+        })
+    });
+
+    function listUser(param, currentPage, rows) {
+        $("tbody").innerHtml = "";
+        var token = window.sessionStorage.token;
+
+        var data = {}
+
+        if (token != undefined && token != "") {
+            data.login_token = token
+        }
+
+        data.param = $("#search-param").val();
+        // 获取用户列表
+        // console.log(JSON.stringify(data));
+        $.ajax({
+            type: "POST",
+            url: "mvc/news/list",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(data),
+            success: function (result) {
+                if (result.code == 0) {
+                    var newsList = result.data.list;
+                    datas = newsList;
+                    console.log(datas)
+                    $("#totalCount").val(newsList.length)
+                    // 分页操作
+                    var options = {
+                        "id": "page",//显示页码的元素
+                        "data": newsList,//显示数据
+                        "maxshowpageitem": 3,//最多显示的页码个数
+                        "pagelistcount": parseInt($("#select-div").find('option:selected').val()),//每页显示数据个数
+                        "callBack": function (result) {
+                            console.log(result)
+                            $("tbody").html("")
+                            var tr = "";
+                            for (var i = 0; i < result.length; i++) {
+                                tr += "<tr>";
+                                tr += "<tr><th><input type='checkbox' name='choice' value='" + result[i].id + "'></th><th><a class='info-a' href='#' data-id='" + result[i].id + "'>" + (i + 1) + "</th><th style='width: 200px'>" + formatStr(result[i].title) + "</th><th style='width: 200px'>" + formatStr(result[i].sec_title) + "</th><th>" + formatStr(result[i].author) + "</th><th>" + formatStr(result[i].create_time) + "</th><th><a href='#'class='info-a'  data-id='" + result[i].id + "'>编辑</th></tr>"
+                                tr += "</tr>";
+                            }
+                            $("tbody").append(tr);
+                            $('.info-a').on('click', function () {
+                                var id = this.dataset.id;
+                                window.sessionStorage.setItem("newsId", id);
+                                $("#main-content").load("news/info.html");
+                            })
+                            $('.img_change').on('click', function () {
+                                var id = this.getAttribute("news_id");
+                                var img_src = this.getAttribute("img_src");
+//                                window.sessionStorage.setItem("newsId", id);
+//                                $("#main-content").load("news/info.html");
+                            })
+                        }
+                    };
+                    page.init(datas.length, currentPage, options);
+                } else if (result.code == 2000) {
+                    alert(result.message);
+                    window.location.href = "login.html";
+                }
+            }
+        });
+    }
+
+    function deleteNews(ids) {
+        var token = window.sessionStorage.token;
+        var data = {}
+        if (token != undefined && token != "") {
+            data.login_token = token
+        }
+        data.ids = ids
+        $.ajax({
+            type: "POST",
+            url: "mvc/news/delete",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(data),
+            success: function (result) {
+                if (result.code == 0) {
+                    alert("删除成功")
+                    listUser(undefined, 1, 25);
+                } else {
+                    alert(result.message)
+                }
+            }
+        });
+    }
+
+    var datas = [];
+    listUser(undefined, 1, 25);
+
+</script>

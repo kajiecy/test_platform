@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<section class="wrapper">
+    <div class="row mt">
+        <div class="col-lg-12" style="margin: 10px 0">
+            <button type="button" class="btn btn-success" id="addServer-btn"
+                    style="float: left;">
+                添加服务器
+            </button>
+        </div>
+        <div class="col-lg-12">
+            <div style="width: 100%;float: left">
+                <div class="input-group search-input" style="float: left;margin: 10px">
+                   <span class="input-group-addon" id="basic-addon1">
+                       服务器名称
+                   </span>
+                    <input type="text" name="search-input" class="form-control" placeholder="搜索..."
+                           aria-describedby="basic-addon1" id="search-server-name">
+                </div>
+                <button type="button" class="btn btn-success" style="float: left;font-size: 1px; margin-top: 11px;" id="search-name-btn">
+                    搜索
+                </button>
+
+                <div class="input-group search-input" style="float: left;margin: 10px">
+                   <span class="input-group-addon" id="basic-addon4">
+                        公司描述
+                   </span>
+                    <input type="text" name="search-input" class="form-control" placeholder="搜索..."
+                           aria-describedby="basic-addon4" id="search-desc">
+                </div>
+
+                <button type="button" class="btn btn-success" style="float: left;font-size: 1px; margin-top: 11px;" id="search-desc-btn">
+                    搜索
+                </button>
+
+                <div class="input-group search-input" style="float: left;margin: 10px">
+                   <span class="input-group-addon" id="basic-addon5">
+                        服务器类型
+                   </span>
+                    <select class="form-control" id="search-type">
+                        <option value=" ">全部</option>
+                        <option value="1">本地服务器</option>
+                        <option value="2">模拟服务器</option>
+                        <option value="3">真实服务器</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="content-panel">
+                <h4><i class="fa fa-angle-right"></i> 服务列表</h4>
+                <section id="unseen">
+                    <table class="table table-bordered table-striped table-condensed">
+                        <thead>
+                        <tr>
+                            <th><input type="checkbox" id="all"></th>
+                            <th>id</th>
+                            <th>图片</th>
+                            <th style="width: 200px">名称</th>
+                            <th class="content-th">描述</th>
+                            <th>类型</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </section>
+                <div>
+                    <div class="btn-group btn-group-xs" role="group" aria-label="...">
+                        <button type="button" class="btn btn-default" id="delete-btn">删除所选</button>
+                    </div>
+                </div>
+            </div><!-- /content-panel -->
+        </div><!-- /col-lg-4 -->
+    </div><!-- /row -->
+</section>
+<! --/wrapper -->
+<div>
+    <div style="float: left;width: 10%;margin: 5px;" class="input-group input-group-sm">
+        <span class="input-group-addon" id="basic-addon3">跳转到</span>
+        <input type="number" class="form-control" id="currentPage" value="1" aria-describedby="basic-addon3">
+    </div>
+    <button type="button" class="btn btn-success" style="float: left;font-size: 1px; margin-top: 4px;" id="page-go-btn">
+        跳转
+    </button>
+    <div class="input-group input-group-sm" style="float: left;width: 10%;margin: 5px;">
+        <span class="input-group-addon">共</span>
+        <input type="text" id="totalCount" disabled class="form-control" aria-label="Amount (to the nearest dollar)">
+        <span class="input-group-addon">条</span>
+    </div>
+    <div>
+        <ul class="page" id="page"></ul>
+    </div>
+    <div class="input-group input-group-sm" style="width: 15%;margin: 5px;float: left">
+        <select aria-describedby="basic-addon2" id="select-div" class="form-control">
+            <option value="25" selected> 25</option>
+            <option value="50"> 50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+            <option value="400">400</option>
+            <option value="800">800</option>
+            <option value="1000">1000</option>
+        </select>
+        <span class="input-group-addon" id="basic-addon2">行/页</span>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+
+    $(function () {
+        //添加服务器
+        $("#addServer-btn").click(function () {
+            $("#main-content").load("service/info.html");
+        })
+
+        // 跳转页面
+        $("#page-go-btn").click(function () {
+            var num_ = $("#currentPage").val();
+            if (isNaN(parseInt(num_))) {
+                $("#currentPage").val(1)
+            }
+            listUser(num_, $("#select-div").find('option:selected').val());
+        })
+
+        // 根据服务器类型搜索
+        $("#search-type").change(function () {
+            listUser(1, $("#select-div").find('option:selected').val())
+        })
+
+        // 更改每页的行数
+        $("#select-div").change(function () {
+            console.log()
+            listUser(1, $("#select-div").find('option:selected').val())
+        })
+        //搜索
+        $("#search-desc-btn").click(function () {
+            listUser(1, $("#select-div").find('option:selected').val())
+        })
+        $("#search-name-btn").click(function () {
+            listUser(1, $("#select-div").find('option:selected').val())
+        })
+
+        // 全选、 全不选
+        $("#all").click(function () {
+            if (this.checked) {
+                $(":checkbox").attr("checked", "checked");
+            } else {
+                $(":checkbox").removeAttr("checked")
+            }
+            ;
+        })
+        // 删除
+        $("#delete-btn").bind("click", function () {
+            var valArr = new Array;
+            $("input[name=choice]:checked").each(function (i) {
+                valArr[i] = $(this).val();
+            });
+            deleteServer(valArr.join(','))
+        })
+    });
+
+    function listUser(currentPage, rows) {
+        $("tbody").innerHtml = "";
+        var token = window.sessionStorage.token;
+
+        var data = {}
+
+        if (token != undefined && token != "") {
+            data.login_token = token
+        }
+
+        data.name = $("#search-server-name").val()
+        data.desc = $("#search-desc").val()
+        data.type = $("#search-type").find("option:selected").val();
+        // 获取用户列表
+        // console.log(JSON.stringify(data));
+        $.ajax({
+            type: "POST",
+            url: "mvc/service/list",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(data),
+            success: function (result) {
+                if (result.code == 0) {
+                    var newsList = result.data.list;
+                    datas = newsList;
+                    console.log(datas)
+                    $("#totalCount").val(newsList.length)
+                    // 分页操作
+                    var options = {
+                        "id": "page",//显示页码的元素
+                        "data": newsList,//显示数据
+                        "maxshowpageitem": 3,//最多显示的页码个数
+                        "pagelistcount": parseInt($("#select-div").find('option:selected').val()),//每页显示数据个数
+                        "callBack": function (result) {
+                            console.log(result)
+                            $("tbody").html("")
+                            var tr = "";
+                            for (var i = 0; i < result.length; i++) {
+                                tr += "<tr>";
+                                tr += "<tr><th><input type='checkbox' name='choice' value='" + result[i].id + "' ></th><th><a class='info-a' href='#' data-id='" + result[i].id + "' style='line-height: 60px;text-align: center'>" + result[i].id + "</th><th class='img-th'><img class='service-img' src='" + result[i].img + "' /></th><th style='line-height: 60px;width: 200px'>" + result[i].name + "</th><th style='line-height: 60px;'>" + result[i].service_desc + "</th><th style='line-height: 60px;'>" + result[i].typeDesc + "</th><th style='line-height: 60px;'><a href='#'class='info-a'  data-id='" + result[i].id + "'>编辑</th></tr>"
+                                tr += "</tr>";
+                            }
+                            $("tbody").append(tr);
+                            $('.info-a').on('click', function () {
+                                var id = this.dataset.id;
+                                window.sessionStorage.setItem("serviceId", id);
+                                $("#main-content").load("service/info.html");
+                            })
+                        }
+                    };
+                    page.init(datas.length, currentPage, options);
+                } else if (result.code == 2000) {
+                    alert(result.message);
+                    window.location.href = "login.html";
+                }
+            }
+        });
+
+
+    }
+
+    function deleteServer(ids) {
+        var token = window.sessionStorage.token;
+        var data = {}
+        if (token != undefined && token != "") {
+            data.login_token = token
+        }
+        data.ids = ids
+        $.ajax({
+            type: "POST",
+            url: "mvc/service/delete",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(data),
+            success: function (result) {
+                if (result.code == 0) {
+                    alert("删除成功")
+                    listUser(1, 25);
+                } else {
+                    alert(result.message)
+                }
+            }
+        });
+    }
+
+    var datas = [];
+    listUser(1, 25);
+
+</script>
+
+<style>
+    .service-img {
+        width: 60px;
+        border-radius: 50%;
+    }
+
+    .img-th {
+        width: 60px;
+    }
+
+    tbody th {
+        line-height: 60px;
+    }
+</style>

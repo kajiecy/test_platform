@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="OrderMapper">
+    <select id="selectOrdersByloginId" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT * FROM tbl_order WHERE login_id=#{loginId,jdbcType=INTEGER} AND command IN (0,1)
+    </select>
+
+    <select id="selectOrders" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT * FROM tbl_order WHERE command IN (2, 3, 4, 5)
+    </select>
+
+    <select id="selectBuyOrSell" resultType="map">
+        SELECT * FROM tbl_order WHERE command IN (0, 1)
+    </select>
+
+    <delete id="deleteOrderByloginId" parameterType="map">
+        DELETE FROM tbl_order WHERE login_id=#{loginId,jdbcType=INTEGER} AND command IN (0,1)
+    </delete>
+
+    <update id="updateCommandById" parameterType="map">
+        UPDATE tbl_order SET command=#{command, jdbcType=INTEGER} WHERE id=#{id, jdbcType=INTEGER}
+    </update>
+
+    <select id="selectSumMargin" parameterType="map" resultType="map">
+        SELECT sum(o2.volume * s2.margin) AS margin_all
+        FROM (
+               SELECT
+                 o.symbol,
+                 MAX(o.volume) AS volume
+               FROM (
+                      SELECT
+                        orders.symbol AS symbol,
+                        orders.volume AS volume
+                      FROM tbl_order orders
+                      WHERE orders.login_id = #{loginId,jdbcType=INTEGER}
+                            AND orders.command = 0
+                      UNION ALL
+                      SELECT
+                        orders.symbol      AS symbol,
+                        orders.volume      AS volume
+                      FROM tbl_order orders
+                      WHERE orders.login_id =  #{loginId,jdbcType=INTEGER}
+                            AND orders.command = 1
+                    ) AS o
+               GROUP BY o.symbol
+             ) AS o2, tbl_symbol AS s2
+        WHERE o2.symbol = s2.symbol
+    </select>
+
+    <delete id="deleteExpiration">
+        DELETE FROM tbl_order WHERE expiration >= now();
+    </delete>
+
+    <update id="updateStorage" parameterType="map">
+        UPDATE tbl_order SET storage=#{storage} WHERE id=#{id}
+    </update>
+</mapper>

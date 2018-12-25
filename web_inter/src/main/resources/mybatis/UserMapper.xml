@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 公共方法 -->
+<mapper namespace="UserMapper">
+
+    <select id="selUser" resultType="map" parameterType="map">
+        select
+        *
+        from tbl_user
+        <where>
+            flag > 0
+            <if test="phone !=null and phone !=''">
+                and name = #{name}
+            </if>
+            <if test="loginname !=null and loginname !=''">
+                and login_name = #{loginname}
+            </if>
+            <if test="id !=null and id !=''">
+                and id = #{id}
+            </if>
+            <if test="login_token != null and login_token != ''">
+                and login_token = #{login_token}
+            </if>
+        </where>
+        <if test="lock != null and lock != '' ">
+            for update
+        </if>
+    </select>
+
+    <select id="selUserInfo" resultType="map" parameterType="map">
+        select
+        *
+        from tbl_user
+        <where>
+            flag > 0
+            <if test="id !=null and id !=''">
+                and id = #{id}
+            </if>
+        </where>
+        <if test="lock != null and lock != '' ">
+            for update
+        </if>
+    </select>
+
+    <select id="hasUserByPhone" resultType="java.lang.Integer" parameterType="java.lang.String">
+        select count(1) from tbl_user where phone = #{phone}
+    </select>
+
+    <!-- 注册 -->
+    <insert id="reg" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+        insert into tbl_user (pwd,phone,create_time,nickname
+        <if test="money_bean!=null">
+            ,money_bean
+        </if>
+        ) values (#{pwd},#{phone},now(),#{phone}
+        <if test="money_bean!=null">
+            ,#{money_bean}
+        </if>
+        )
+    </insert>
+
+    <!-- 修改token -->
+    <update id="updateTokenByPhone" parameterType="map">
+        update tbl_user set login_token=#{login_token},login_overtime = now() where phone=#{phone}
+    </update>
+
+    <!-- 修改密码根据手机 -->
+    <update id="updatePwdByPhone" parameterType="map">
+        update tbl_user set pwd=#{pwd} where phone=#{phone}
+    </update>
+
+    <!-- 修改密码根据ID -->
+    <update id="updatePwdById" parameterType="map">
+        update tbl_user set pwd=#{pwd} where id=#{user_id}
+    </update>
+
+    <!-- 修改手机 -->
+    <update id="updatePhone" parameterType="map">
+        update tbl_user set phone=#{phone} where id=#{user_id}
+    </update>
+
+    <!-- 修改头像 -->
+    <update id="updateHeadimg" parameterType="map">
+        update tbl_user set head_img=#{head_img} where id=#{user_id}
+    </update>
+
+    <!-- 修改用户昵称 -->
+    <update id="updateOther" parameterType="map">
+        update tbl_user
+        <set>
+            <if test="sex != null">
+                sex=#{sex},
+            </if>
+            <if test="nickname">
+                nickname=#{nickname},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--修改用户性别-->
+    <update id="updateSex" parameterType="map">
+        update tbl_user set where id = #{id}
+    </update>
+
+    <!-- 添加积分 -->
+    <update id="addIntegral" parameterType="map">
+        update tbl_user set integral=integral + #{integral},integral_canuse=integral_canuse + #{integral} where id = #{id}
+    </update>
+
+    <!-- 删除积分 -->
+    <update id="removeIntegral" parameterType="map">
+        update tbl_user set integral_canuse=integral_canuse - #{integral} where id = #{id}
+    </update>
+    <!--用户余额变动-->
+    <update id="jianMoney" parameterType="map">
+        UPDATE tbl_user SET  money = money - #{money} WHERE  id = #{user_id}
+    </update>
+    <!--为用户增加余额-->
+    <update id="addMoney" parameterType="map">
+        UPDATE tbl_user SET  money = money + #{money} WHERE  id = #{user_id}
+    </update>
+    <!--用户金豆变动-->
+    <update id="jianMoneyBean" parameterType="map">
+        UPDATE tbl_user SET  money_bean = money_bean - #{money_bean} WHERE  id = #{user_id}
+    </update>
+    <update id="addMoneyBean" parameterType="map">
+        UPDATE tbl_user SET  money_bean = money_bean + #{money_bean} WHERE  id = #{user_id}
+    </update>
+
+    <update id="doUserRecharge" parameterType="map">
+        UPDATE tbl_user SET money = money + #{money} ,  money_bean = money_bean + #{money_bean} WHERE  id = #{user_id}
+    </update>
+
+    <select id="selectAdmin" parameterType="map" resultType="map">
+        SELECT tau.admin_id
+        FROM tbl_admin_user tau
+        LEFT JOIN tbl_user_group tug ON tau.user_group_id = tug.id
+        LEFT JOIN tbl_user tu ON tug.id = tu.user_group_id
+        WHERE tu.login_name = #{loginId};
+    </select>
+
+    <select id="selectAllUser" resultType="map">
+        SELECT u.create_time,u.email,u.flag,u.id,u.login_name,u.name,u.phone,u.qqnum,u.update_time FROM tbl_user AS u
+    </select>
+</mapper>
+

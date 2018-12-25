@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="LoginMapper">
+    <select id="selectAllIds" resultType="map">
+          SELECT tbl_login.name,tbl_login.id, tbl_login.balance FROM tbl_login
+    </select>
+
+    <update id="updateBalance" parameterType="map">
+        UPDATE tbl_login SET balance=0 WHERE id=#{loginId}
+    </update>
+</mapper>

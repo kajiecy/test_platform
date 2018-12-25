@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 系统配置 -->
+<mapper namespace="AdminMapper">
+
+    <!-- 通过用户名获取用户信息 -->
+    <select id="selectByUsername" parameterType="map" resultType="map">
+        SELECT tbl_admin.* FROM tbl_admin WHERE tbl_admin.username=#{username}
+    </select>
+
+    <!-- 修改 -->
+    <update id="updateTokenById" parameterType="map">
+        UPDATE tbl_admin SET login_token=#{login_token}, last_time=#{time},ip=#{ip} WHERE id=#{id}
+    </update>
+
+    <!-- 通过管理员 Id 查询用户列表信息 -->
+    <select id="selectUserListByAdmin" parameterType="map" resultType="map">
+        SELECT u.*,tug.group_name
+        FROM tbl_user u
+        LEFT JOIN tbl_user_group ON u.user_group_id = tbl_user_group.id
+        LEFT JOIN tbl_admin_user ON tbl_admin_user.user_group_id = tbl_user_group.id
+        LEFT JOIN tbl_user_group tug ON u.user_group_id = tug.id
+        WHERE tbl_admin_user.admin_id =#{adminId}
+        <if test="beginDate != null">
+            AND u.create_time > #{beginDate}
+        </if>
+        <if test="endDate != null">
+            AND u.create_time <![CDATA[<]]> #{endDate}
+        </if>
+        <if test="loginName != null">
+            AND u.login_name LIKE #{loginName}
+        </if>
+        <if test="realName != null">
+            AND u.name LIKE #{realName}
+        </if>
+        <if test="email != null">
+            AND u.email LIKE #{email}
+        </if>
+        <if test="tel != null">
+            AND u.phone LIKE #{tel}
+        </if>
+        <if test="qq != null">
+            AND u.qqnum LIKE #{qq}
+        </if>
+        <if test="from != null">
+            AND u.from LIKE #{from}
+        </if>
+        <if test="color != null and color != '#ffffff'">
+            AND u.color LIKE #{color}
+        </if>
+        <if test="group != null">
+            AND u.user_group_id = #{group}
+        </if>
+        ORDER BY CAST(u.login_name AS SIGNED) DESC
+    </select>
+
+    <!-- 查询所有的管理员 -->
+    <select id="listAdmin" resultType="map">
+        SELECT * FROM tbl_admin
+    </select>
+
+    <!-- 查询管理员所管理的用户组信息 -->
+    <select id="viwAdminGroup" resultType="map" parameterType="map">
+        SELECT tbl_user_group.*,tbl_admin_user.id AS auid
+        FROM tbl_user_group
+          LEFT JOIN tbl_admin_user ON tbl_admin_user.user_group_id = tbl_user_group.id
+          WHERE tbl_admin_user.admin_id=#{adminId}
+    </select>
+
+</mapper>
+

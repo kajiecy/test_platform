@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 系统配置 -->
+<mapper namespace="SymbolGroupMapper">
+
+    <select id="selGroupList" parameterType="map" resultType="map">
+        SELECT *
+        FROM `tbl_symbol_group`
+    </select>
+
+
+    <insert id="addSymbolGroup" parameterType="map">
+        INSERT INTO tbl_symbol_group (`group_name`,`symbol_type`,`server_dec`)
+        VALUES(#{groupname},#{grouptype},#{serverdec})
+    </insert>
+
+    <update id="upSymbolGruop" parameterType="map">
+        UPDATE tbl_symbol_group
+        <set>
+            <if test="groupname!=null and groupname!=''">
+                group_name = #{groupname},
+            </if>
+            <if test="symboltype!=null and symboltype!=''">
+                symbol_type =  #{symboltype},
+            </if>
+            <if test="serverdec!=null and serverdec!=''">
+                server_dec =  #{serverdec},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <delete id="delSymbolGroup" parameterType="map">
+        DELETE FROM tbl_symbol_group WHERE id = #{id}
+    </delete>
+</mapper>
+

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="realServer">
+    <section class="wrapper">
+        <div class="row mt">
+            <div class="col-lg-12">
+                <h4><strong>模拟服务器</strong></h4>
+            </div>
+            <div class="col-lg-12">
+                <!-- 按钮 -->
+                <div>
+                    <button type="button" class="btn btn-success" data-toggle="modal" @click="addBtn">
+                        添加组
+                    </button>
+                </div>
+                <div class="content-panel">
+                    <h4><i class="fa fa-angle-right"></i>列表</h4>
+                    <section id="unseen">
+                        <table class="table table-bordered table-striped table-condensed">
+                            <thead>
+                            <tr>
+                                <!--<th><input type="checkbox" id="all"></th>-->
+                                <th>id</th>
+                                <th>服务器类型</th>
+                                <th>模拟组名</th>
+                                <th>货币类型</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(item,index) in itemList">
+                                <!--<th><input type="checkbox" class="group-item" v-model="item.check"></th>-->
+                                <th>{{index+1}}</th>
+                                <th>{{item.server_dec}}</th>
+                                <th>{{item.group_name}}</th>
+                                <th>{{item.symbol_type}}</th>
+                                <th>
+                                    <a role="button" style="cursor: pointer" @click="edit(index)">编辑</a> &nbsp;&nbsp;|&nbsp;&nbsp;
+                                    <a role="button" style="cursor: pointer" @click="deleteBtn(item.id)">删除</a>
+                                </th>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </section>
+                    <!--<div>-->
+                        <!--<div class="btn-group btn-group-xs" role="group" aria-label="...">-->
+                            <!--<button type="button" class="btn btn-default" id="all-btn" @click="checkAll">全选/全取消</button>-->
+                            <!--<button type="button" class="btn btn-default" id="delete-btn">删除</button>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                </div><!-- /content-panel -->
+            </div><!-- /col-lg-4 -->
+        </div><!-- /row -->
+    </section>
+    <! --/wrapper -->
+    <div>
+        <div style="float: left;width: 10%;margin: 5px;" class="input-group input-group-sm">
+            <span class="input-group-addon" id="basic-addon3">跳转到</span>
+            <input type="number" class="form-control" v-model="page.currentPage" aria-describedby="basic-addon3">
+        </div>
+        <button type="button" class="btn btn-success" style="float: left;font-size: 1px; margin-top: 4px;"
+                @click="goPage">
+            跳转
+        </button>
+        <div class="input-group input-group-sm" style="float: left;width: 10%;margin: 5px;">
+            <span class="input-group-addon">共</span>
+            <input type="text" v-model="page.totalCount" disabled class="form-control"
+                   aria-label="Amount (to the nearest dollar)">
+            <span class="input-group-addon">条</span>
+        </div>
+        <div>
+            <ul class="page" id="page"></ul>
+        </div>
+        <div class="input-group input-group-sm" style="width: 15%;margin: 5px;float: left">
+            <select aria-describedby="basic-addon2" v-model="page.rows" class="form-control" @change="rowsChange">
+                <option value="25" selected> 25</option>
+                <option value="50"> 50</option>
+                <option value="100">100</option>
+                <option value="200">200</option>
+                <option value="400">400</option>
+                <option value="800">800</option>
+                <option value="1000">1000</option>
+            </select>
+            <span class="input-group-addon" id="basic-addon2">行/页</span>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="serverGroupModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="modal-title">添加组</h4>
+                </div>
+                <div class="modal-body">
+                    <input class="form-control" v-show="false" v-model="group.id">
+                    <label>服务器类型</label>
+                    <select class="form-control" v-model="group.server_dec">
+                        <option value="本地服务器">本地服务器</option>
+                        <option value="模拟服务器">模拟服务器</option>
+                        <option value="真实服务器">真实服务器</option>
+                    </select>
+                    <label>组类型</label>
+                    <select class="form-control" v-model="group.symbol_type">
+                        <option value="ngroup">ngroup</option>
+                        <option value="vgroup">vgroup</option>
+                        <option value=".group">.group</option>
+                    </select>
+                    <label>组名</label>
+                    <input class="form-control" v-model="group.group_name">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close"
+                            @click="save">保存
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+    $(function () {
+        var realServer = new Vue({
+            el: '#realServer',
+            data: {
+                itemList: [],
+                group: {},
+                page: {
+                    currentPage: 1,
+                    totalCount: 0,
+                    rows: 25
+                },
+                token: ""
+            },
+            created: function () {
+                this.token = window.sessionStorage.getItem("token")
+                this.loadItemsList()
+            },
+            methods: {
+                loadItemsList: function () {
+                    var group = {
+                        login_token: this.token
+                    }
+                    var that = this
+                    $.ajax({
+                        type: "POST",
+                        url: "mvc/symbolGroup/list",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: JSON.stringify(group),
+                        success: function (result) {
+                            if (result.code == 0) {
+                                var itemList = result.data.list
+                                console.log(itemList.length)
+                                that.page.totalCount = itemList.length
+                                var options = {
+                                    "id": "page",//显示页码的元素
+                                    "data": itemList,//显示数据
+                                    "maxshowpageitem": 3,//最多显示的页码个数
+                                    "pagelistcount": parseInt(that.page.rows),//每页显示数据个数
+                                    "callBack": function (result) {
+                                        that.itemList = result
+                                        console.log(that.itemList)
+                                    }
+                                };
+                                page.init(that.page.totalCount, that.page.currentPage, options);
+                            } else if (result.code == 2000) {
+                                alert(result.message);
+                                window.location.href = "login.html";
+                            }
+                        }
+                    });
+                    this.page.totalCount = this.itemList.length
+                },
+                formaterType: function (type) {
+                    if (type == 1) {
+                        return "本地服务器"
+                    } else if (type == 2) {
+                        return "模拟服务器"
+                    } else if (type == 3) {
+                        return "真实服务器"
+                    }
+                },
+                //添加按钮
+                addBtn: function () {
+                    $('#serverGroupModal').modal('toggle')
+                },
+                // 编辑
+                edit: function (index) {
+                    this.group = this.itemList[index]
+                    console.log(this.group)
+                    $('#serverGroupModal').modal('toggle')
+                },
+                // 保存
+                save: function () {
+                    var group = this.group
+                    group.login_token = this.token
+                    var that = this
+                    if (this.group.id) { //修改
+                        console.log("修改")
+                        console.log(this.group)
+                        $.ajax({
+                            type: "POST",
+                            url: "mvc/symbolGroup/update",
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            data: JSON.stringify(group),
+                            success: function (result) {
+                                if (result.code == 0) {
+                                    alert("修改成功")
+                                    that.page.currentPage = 1
+                                    that.loadItemsList()
+                                    $('#serverGroupModal').modal('hide')
+                                } else if (result.code == 2000) {
+                                    alert(result.message);
+                                    window.location.href = "login.html";
+                                }
+                            }
+                        });
+                    } else { //保存
+                        console.log("保存")
+                        console.log(this.group)
+                        $.ajax({
+                            type: "POST",
+                            url: "mvc/symbolGroup/save",
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            data: JSON.stringify(group),
+                            success: function (result) {
+                                if (result.code == 0) {
+                                    that.page.currentPage = 1
+                                    alert("新增成功")
+                                    $('#serverGroupModal').modal('hide')
+                                    that.loadItemsList()
+                                } else if (result.code == 2000) {
+                                    alert(result.message);
+                                    window.location.href = "login.html";
+                                }
+                            }
+                        });
+                    }
+                    this.group = {}
+                },
+                // 分页行数改变
+                rowsChange: function () {
+                    this.loadItemsList()
+                },
+                // 分页跳转
+                goPage: function () {
+                    this.loadItemsList()
+                },
+                // 删除
+                deleteBtn: function (id) {
+                    var group = {
+                        login_token: this.token,
+                        id: id
+                    }
+                    var that = this
+                    $.ajax({
+                        type: "POST",
+                        url: "mvc/symbolGroup/delete",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        data: JSON.stringify(group),
+                        success: function (result) {
+                            if (result.code == 0) {
+                                alert("删除成功")
+                                that.page.currentPage = 1
+                                that.loadItemsList()
+                            } else if (result.code == 2000) {
+                                alert(result.message);
+                                window.location.href = "login.html";
+                            }
+                        }
+                    });
+                },
+//                // 全选、 全取消
+//                checkAll: function () {
+//                    console.log($("#all").attr("checked"))
+//                    var all = $("#all").attr("checked")
+//                    if (all) {
+//                        $("#all").removeAttr("checked")
+//                    } else {
+//                        $("#all").attr("checked", "checked");
+//                        for (var i = 0; i < this.itemList.length; i++) {
+//                            this.itemList[i].check = true
+//                        }
+//                    }
+//                }
+            }
+        })
+    });
+</script>
+
+<style>
+    .service-img {
+        width: 60px;
+        border-radius: 50%;
+    }
+
+    .img-th {
+        width: 60px;
+    }
+
+    tbody th {
+        line-height: 60px;
+    }
+</style>

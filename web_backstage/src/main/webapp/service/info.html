@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<section class="wrapper">
+    <!-- <h3><i class="fa fa-angle-right"></i> Form Components</h3> -->
+    <div class="row mt">
+        <div class="col-lg-12">
+            <div class="form-panel">
+                <h4 class="mb"><i class="fa fa-angle-right"></i> 服务</h4>
+                <form class="form-horizontal style-form" method="get">
+                    <div class="form-group" style="display: none">
+                        <label class="col-sm-2 col-sm-2 control-label">Id</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="id" class="form-control round-form" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">服务器名称</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="name" class="form-control round-form">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">服务器图片</label>
+                        <div class="col-sm-10">
+                            <div id="upload" style="display: none">上传</div>
+                            <input id="img" name="img_url" hidden/>
+                            <div style="position:relative;display: inline-block;">
+                                <img style="width: 140px;height:140px" id="img_all" :src="info.imgUrl"/>
+                                <input type="button" id="sys01" onclick="upload_img.upload_btn(this,'img_url')"
+                                       value="选择图片"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">服务器描述</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="desc" class="form-control round-form">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">服务器类型</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="type">
+                                <option value="1">本地服务器</option>
+                                <option value="2">模拟服务器</option>
+                                <option value="3">真实服务器</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="text-align: center">
+                        <button type="button" class="btn btn-danger btn-sm btn-block"
+                                style="display: -webkit-inline-box;width: 15%;" id="update-btn">修改
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm btn-block"
+                                style="display: -webkit-inline-box;width: 15%;" id="save-btn">提交
+                        </button>
+                    </div>
+            </div>
+        </div><!-- col-lg-12-->
+    </div>
+    <!-- 更换管理员 -->
+</section>
+</body>
+</html>
+<script>
+    //custom select box
+
+    $(function () {
+
+//        var params = GetRequestParams();
+//        console.log(params);
+        var serviceId = window.sessionStorage.getItem("serviceId")
+        window.sessionStorage.removeItem("serviceId");
+        if (serviceId != undefined && serviceId != null) {
+            $("#save-btn").hide();
+            $("#update-btn").show()
+            $(".time").show()
+            var token = window.sessionStorage.token;
+            var data = {
+                "id": serviceId
+            }
+            if (token != undefined && token != "") {
+                data.login_token = token
+            }
+            // 获取新闻详细信息
+            $.ajax({
+                type: "POST",
+                url: "mvc/service/info",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(data),
+                success: function (result) {
+                    if (result.code == 0) {
+                        var service = result.data.info;
+                        console.log(service)
+                        $("#id").val(service.id);
+                        $("#name").val(service.name);
+                        $("#img").val(service.img);
+                        $("#img_all").attr('src', service.img);
+                        $("#desc").val(service.serviceDesc);
+                        $("#type").val(service.type);
+
+                    } else if (result.code == 2000) {
+                        alert(result.message);
+                        window.location.href = "login.html";
+                    }
+                }
+            });
+        } else {
+            console.log("新增")
+            $("#save-btn").show();
+            $("#update-btn").hide()
+            $(".time").hide();
+        }
+
+
+    });
+
+    // 新增
+    $("#save-btn").click(function () {
+        var token = window.sessionStorage.token;
+        var service = {
+            "login_token": token
+        }
+
+        service.name = $("#name").val();
+        service.img = $("#img").val();
+        service.desc = $("#desc").val();
+        service.type = $("#type").val();
+        console.log(service)
+
+        $.ajax({
+            type: "POST",
+            url: "mvc/service/save",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(service),
+            success: function (result) {
+                if (result.code == 0) {
+                    alert("成功")
+                    $("#main-content").load("service/table.html")
+                } else if (result.code == 2000) {
+                    alert(result.message);
+                    window.location.href = "login.html";
+                }
+            }
+        });
+    })
+
+    // 修改信息
+    $("#update-btn").click(function (event) {
+        var token = window.sessionStorage.token;
+        var service = {
+            "login_token": token
+        }
+        service.id = $("#id").val();
+        service.name = $("#name").val();
+        service.img = $("#img").val();
+        service.desc = $("#desc").val();
+        service.type = $("#type").val();
+        console.log(service)
+
+        $.ajax({
+            type: "POST",
+            url: "mvc/service/update",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(service),
+            success: function (result) {
+                if (result.code == 0) {
+                    alert("成功")
+                    $("#main-content").load("service/table.html")
+                } else if (result.code == 2000) {
+                    alert(result.message);
+                    window.location.href = "login.html";
+                } else {
+                    console.log(result)
+                }
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    });
+
+    var upload_img = {
+        obj: null
+        , now_btn: null
+        , upload_ok: function (sourcesLink) {
+            console.log("上传成功：" + sourcesLink);
+            switch (this.now_btn) {
+                case "img_url":
+                    console.log("img_url上传成功：" + sourcesLink);
+                    $("#img_all").attr('src', sourcesLink);
+                    $("#img").val(sourcesLink);
+                    break;
+                case "img_url2":
+                    console.log("img_url上传成功：" + sourcesLink);
+                    $("#img_all2").attr('src', sourcesLink);
+                    $("#img_url2").val(sourcesLink);
+                    break;
+            }
+        }
+        , upload_btn: function (obj, btn_now) {
+            this.now_btn = btn_now;
+            upload_img.obj.sel_file();
+            console.log("点击了");
+        }
+        , init: function () {
+            var load_1 = null;
+            this.obj = com.qiniu.init("upload", {
+                do_getuptoken: function (file_name, fun_ok) {
+                    //必须是同步请求,返回 fun_ok( 上传的uptoken,文件的名称（唯一）key,访问的域名cname ,存储的仓库名称 brunt );
+                    var uptokenInfo = {};
+                    var data = {
+                        "login_token": window.sessionStorage.token,
+                        "name": file_name
+                    }
+                    $.ajax({
+                        type: "POST",
+                        url: "mvc/qiNiu/getQiniuToken",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        async: false,
+                        data: JSON.stringify(data),
+                        success: function (result) {
+                            uptokenInfo["token"] = result.data.uptoken;
+                            uptokenInfo["key"] = result.data.key;
+                            uptokenInfo["cname"] = result.data.domain;
+                            uptokenInfo["brunt"] = result.data.scope;
+                            console.log(uptokenInfo)
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
+                    return uptokenInfo;
+                }
+                , do_filesadd: function (up, files){
+                    plupload.each(files, function (file) {
+//                        alert(JSON.stringify(file));
+                        // 文件添加进队列后，处理相关的事情
+                        // 每个文件上传前，处理相关的事情
+                        if (!confirm('确定上传：' + file.name + '\n 文件大小:' + file.size + '')) {
+                            up.stop();
+                            up.removeFile(file.id);
+                        } else {
+                            up.start();
+                        }
+                    });
+                }
+                , do_success: function (up, file, sourceLink) {
+                    upload_img.upload_ok(sourceLink);
+                    //完成就自动移除队列中
+                    up.removeFile(file.id);
+                }
+                , do_progress: function (bfb) {
+                    console.log("----jd:" + bfb);
+                }
+                , do_error: function (errTip, err) {
+                    console.log("----errTip:" + errTip);
+                    console.error(err);
+                }
+                , do_beforup: function (up, file) {
+//                    load_1=layer.load(1);
+                }
+                , do_complete: function () {
+                    console.log("----jd_ok");
+//                    layer.close(load_1);
+                }
+                , filter: com.qiniu.filters.img
+            });
+        }
+    }
+    upload_img.init();
+
+</script>

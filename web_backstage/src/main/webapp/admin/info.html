@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<section class="wrapper">
+    <!-- <h3><i class="fa fa-angle-right"></i> Form Components</h3> -->
+    <div class="row mt">
+        <div class="col-lg-12">
+            <div class="form-panel">
+                <h4 class="mb"><i class="fa fa-angle-right"></i> 管理员</h4>
+                <form class="form-horizontal style-form" method="get">
+                    <div class="form-group" style="display: none">
+                        <label class="col-sm-2 col-sm-2 control-label">Id</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="id" class="form-control round-form" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">用户名</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="name" class="form-control round-form">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">密码</label>
+                        <div class="col-sm-10">
+                            <input type="password" id="password" class="form-control round-form">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">重复密码</label>
+                        <div class="col-sm-10">
+                            <input type="password" id="repassword" class="form-control round-form">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">E-mail</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="email" class="form-control round-form">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">真实姓名</label>
+                        <div class="col-sm-10">
+                            <input type="text" id="realName" class="form-control round-form">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">权限</label>
+                        <div class="col-sm-10">
+                            <select class="form-control round-form" id="superAdmin">
+                                <option value="1">超级管理员</option>
+                                <option value="0">普通管理员</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 col-sm-2 control-label">身份</label>
+                        <div class="col-sm-10" style="line-height: 30px">
+                            <select class="form-control round-form" id="groupName">
+                                <option value="1">所有会员组</option>
+                            </select>
+                            <span id="groupNameDiv">所有会员组</span>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center">
+                        <button type="button" class="btn btn-danger btn-sm btn-block"
+                                style="display: -webkit-inline-box;width: 15%;" id="update-btn">修改
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm btn-block"
+                                style="display: -webkit-inline-box;width: 15%;" id="save-btn">提交
+                        </button>
+                    </div>
+            </div>
+        </div><!-- col-lg-12-->
+    </div>
+    <!-- 更换管理员 -->
+</section>
+</body>
+</html>
+<script>
+    //custom select box
+
+    $(function () {
+
+//        var params = GetRequestParams();
+//        console.log(params);
+        var amdinId = window.sessionStorage.getItem("adminId")
+        window.sessionStorage.removeItem("adminId");
+
+        var adminInfoType = window.sessionStorage.getItem("admin-type")
+        window.sessionStorage.removeItem("admin-type")
+
+        // 判断是否是修改个人信息
+        console.log(adminInfoType)
+        if (adminInfoType && adminInfoType == 'edit-myself') {
+            $("#superAdmin").attr("disabled", "disabled")
+            $("#groupName").attr("disabled", "disabled")
+        }
+        // 获取用户组列表
+        var token = window.sessionStorage.token;
+        var data = {}
+        if (token != undefined && token != "") {
+            data.login_token = token
+        }
+        $.ajax({
+            type: "POST",
+            url: "mvc/userGroup/list",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(data),
+            success: function (result) {
+                console.log(result)
+                if (result.code == 0) {
+                    var list = result.data.list
+                    console.log(list)
+                    var html = "";
+                    for (var i = 0; i < list.length; i++) {
+                        html += "<option value='" + list[i].id + "'>" + list[i].group_name + "</option>";
+                    }
+                    $("#groupName").html(html)
+                    getInfo(amdinId)
+                    // 分页操作
+                } else if (result.code == 2000) {
+                    alert(result.message);
+                    window.location.href = "login.html";
+                }
+            }
+        });
+
+        // 监听管理员类型更改事件
+        $("#superAdmin").change(function (e) {
+            console.log()
+            if ($(this).val() == 1) { //超级管理员
+                $("#groupName").hide()
+                $("#groupNameDiv").show()
+            } else { //普通管理员
+                $("#groupName").show()
+                $("#groupNameDiv").hide()
+            }
+        })
+    });
+
+    function  getInfo(amdinId) {
+        if (amdinId != undefined && amdinId != null) {
+            $("#save-btn").hide();
+            $("#name").attr('readonly', 'readonly')
+            $("#update-btn").show()
+            $(".time").show()
+            var token = window.sessionStorage.token;
+            var data = {
+                "id": amdinId
+            }
+            if (token != undefined && token != "") {
+                data.login_token = token
+            }
+            // 获取详细信息
+            $.ajax({
+                type: "POST",
+                url: "mvc/admin/info",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(data),
+                success: function (result) {
+                    if (result.code == 0) {
+                        var admin = result.data.info;
+                        console.log(result.data)
+                        var groupInfo = result.data.groupInfo
+                        if (groupInfo) {
+                            $("#groupName").val(groupInfo.id)
+                        } else {
+                            $("#groupName").val("")
+                        }
+
+                        $("#id").val(admin.id);
+                        $("#name").val(admin.username)
+                        $("#password").val(admin.password)
+                        $("#repassword").val(admin.password)
+                        $("#email").val(admin.email)
+                        $("#realName").val(admin.realName)
+                        if (admin.superAdmin) {
+                            $("#superAdmin").val(1)
+                            $("#groupName").hide()
+                            $("#groupNameDiv").show()
+                        } else {
+                            $("#superAdmin").val(0)
+                            $("#groupName").show()
+                            $("#groupNameDiv").hide()
+                        }
+
+                    } else if (result.code == 2000) {
+                        alert(result.message);
+                        window.location.href = "login.html";
+                    }
+                }
+            });
+        } else {
+            console.log("新增")
+            $("#groupName").hide()
+            $("#groupNameDiv").show()
+            $("#save-btn").show();
+            $("#name").removeAttr('readonly')
+            $("#update-btn").hide()
+            $(".time").hide();
+        }
+    }
+
+    // 新增
+    $("#save-btn").click(function () {
+        var token = window.sessionStorage.token;
+        var admin = {
+            "login_token": token
+        }
+        admin.username = $("#name").val();
+        admin.password = $("#password").val();
+        admin.repassword = $("#repassword").val();
+        admin.email = $("#email").val();
+        admin.realName = $("#realName").val();
+        admin.superAdmin = $("#superAdmin").val()
+        admin.groupName = $("#groupName").val()
+        console.log(admin)
+
+        $.ajax({
+            type: "POST",
+            url: "mvc/admin/saveAdmin",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(admin),
+            success: function (result) {
+                console.log(result)
+                if (result.code == 0) {
+                    alert("成功")
+                    $("#main-content").load("admin/table.html")
+                } else if (result.code == 2000) {
+                    window.location.href = "login.html";
+                } else {
+                    alert(result.message);
+                }
+            }
+        });
+    })
+
+    // 修改信息
+    $("#update-btn").click(function (event) {
+        var token = window.sessionStorage.token;
+        var admin = {
+            "login_token": token
+        }
+        admin.id = $("#id").val();
+        admin.username = $("#name").val();
+        admin.password = $("#password").val();
+        admin.repassword = $("#repassword").val();
+        admin.email = $("#email").val();
+        admin.realName = $("#realName").val();
+        admin.superAdmin = $("#superAdmin").val()
+        console.log(admin.superAdmin== '0')
+        if (admin.superAdmin == '0') {
+            admin.groupName = $("#groupName").val()
+        } else {
+            admin.groupName = -1
+        }
+        console.log(admin)
+
+        $.ajax({
+            type: "POST",
+            url: "mvc/admin/updateAdmin",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(admin),
+            success: function (result) {
+                if (result.code == 0) {
+                    alert("成功")
+                    $("#main-content").load("admin/table.html")
+                } else if (result.code == 2000) {
+                    alert(result.message);
+                    window.location.href = "login.html";
+                } else {
+                    alert(result.message);
+                }
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    });
+
+    var upload_img = {
+        obj: null
+        , now_btn: null
+        , upload_ok: function (sourcesLink) {
+            console.log("上传成功：" + sourcesLink);
+            switch (this.now_btn) {
+                case "img_url":
+                    console.log("img_url上传成功：" + sourcesLink);
+                    $("#img_all").attr('src', sourcesLink);
+                    $("#img").val(sourcesLink);
+                    break;
+                case "img_url2":
+                    console.log("img_url上传成功：" + sourcesLink);
+                    $("#img_all2").attr('src', sourcesLink);
+                    $("#img_url2").val(sourcesLink);
+                    break;
+            }
+        }
+        , upload_btn: function (obj, btn_now) {
+            this.now_btn = btn_now;
+            upload_img.obj.sel_file();
+            console.log("点击了");
+        }
+        , init: function () {
+            var load_1 = null;
+            this.obj = com.qiniu.init("upload", {
+                do_getuptoken: function (file_name, fun_ok) {
+                    //必须是同步请求,返回 fun_ok( 上传的uptoken,文件的名称（唯一）key,访问的域名cname ,存储的仓库名称 brunt );
+                    var uptokenInfo = {};
+                    var data = {
+                        "login_token": window.sessionStorage.token,
+                        "name": file_name
+                    }
+                    $.ajax({
+                        type: "POST",
+                        url: "mvc/qiNiu/getQiniuToken",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        async: false,
+                        data: JSON.stringify(data),
+                        success: function (result) {
+                            uptokenInfo["token"] = result.data.uptoken;
+                            uptokenInfo["key"] = result.data.key;
+                            uptokenInfo["cname"] = result.data.domain;
+                            uptokenInfo["brunt"] = result.data.scope;
+                            console.log(uptokenInfo)
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
+                    return uptokenInfo;
+                }
+                , do_filesadd: function (up, files) {
+                    plupload.each(files, function (file) {
+//                        alert(JSON.stringify(file));
+                        // 文件添加进队列后，处理相关的事情
+                        // 每个文件上传前，处理相关的事情
+                        if (!confirm('确定上传：' + file.name + '\n 文件大小:' + file.size + '')) {
+                            up.stop();
+                            up.removeFile(file.id);
+                        } else {
+                            up.start();
+                        }
+                    });
+                }
+                , do_success: function (up, file, sourceLink) {
+                    upload_img.upload_ok(sourceLink);
+                    //完成就自动移除队列中
+                    up.removeFile(file.id);
+                }
+                , do_progress: function (bfb) {
+                    console.log("----jd:" + bfb);
+                }
+                , do_error: function (errTip, err) {
+                    console.log("----errTip:" + errTip);
+                    console.error(err);
+                }
+                , do_beforup: function (up, file) {
+//                    load_1=layer.load(1);
+                }
+                , do_complete: function () {
+                    console.log("----jd_ok");
+//                    layer.close(load_1);
+                }
+                , filter: com.qiniu.filters.img
+            });
+        }
+    }
+    upload_img.init();
+
+</script>

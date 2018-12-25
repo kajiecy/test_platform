@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="SymbolMapper">
+    <select id="selectAllSymbols" parameterType="map" resultType="map">
+          SELECT symbol,final_value FROM tbl_symbol
+    </select>
+
+    <select id="selectFinalValueBySymbol" parameterType="map" resultType="map">
+        SELECT DISTINCT id,symbol,final_value,margin FROM tbl_symbol WHERE symbol=#{symbol}
+    </select>
+</mapper>

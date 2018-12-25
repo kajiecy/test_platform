@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 系统配置 -->
+<mapper namespace="SystemMapper">
+
+    <select id="getAndroidVersion" parameterType="map" resultType="map">
+        SELECT * FROM `tbl_version`
+        WHERE `name`='MT4Android'
+        ORDER BY version_name desc
+        LIMIT 0,1
+    </select>
+
+</mapper>
+

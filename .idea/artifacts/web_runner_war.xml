@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="web_runner:war">
+    <output-path>$PROJECT_DIR$/web_runner/target</output-path>
+    <root id="archive" name="web_runner.war">
+      <element id="artifact" artifact-name="web_runner:war exploded" />
+    </root>
+  </artifact>
+</component>

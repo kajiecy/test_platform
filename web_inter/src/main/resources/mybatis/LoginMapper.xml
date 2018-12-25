@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 系统配置 -->
+<mapper namespace="LoginMapper">
+    <select id="selLogin" parameterType="map" resultType="map">
+        SELECT * FROM `tbl_login` WHERE id = #{login_id}
+    </select>
+
+    <select id="selLoginByClientId" parameterType="map" resultType="map">
+        SELECT * FROM `tbl_login` WHERE clientid is not null AND  clientid !=''
+    </select>
+
+    <update id="updateTokenById" parameterType="map">
+        update tbl_login set login_token=#{login_token}
+        <if test="phonetype!=null">
+          ,phonetype = #{phonetype}
+        </if>
+        <if test="clientid!=null and clientid!=''">
+          ,clientid = #{clientid}
+        </if>
+        <if test="token!=null and token!=''">
+          ,token = #{token}
+        </if>
+         where id=#{login}
+    </update>
+
+    <update id="updateBalance" parameterType="map">
+        UPDATE tbl_login SET balance=balance+#{balance} WHERE id=#{loginId}
+    </update>
+
+
+
+</mapper>
+
