@@ -9,7 +9,9 @@
       <module fileurl="file://$PROJECT_DIR$/base_po/base_po.iml" filepath="$PROJECT_DIR$/base_po/base_po.iml" />
       <module fileurl="file://$PROJECT_DIR$/base_push/base_push.iml" filepath="$PROJECT_DIR$/base_push/base_push.iml" />
       <module fileurl="file://$PROJECT_DIR$/base_soap/base_soap.iml" filepath="$PROJECT_DIR$/base_soap/base_soap.iml" />
+      <module fileurl="file://$PROJECT_DIR$/base_util/base_util.iml" filepath="$PROJECT_DIR$/base_util/base_util.iml" />
       <module fileurl="file://$PROJECT_DIR$/mt4_platform.iml" filepath="$PROJECT_DIR$/mt4_platform.iml" />
+      <module fileurl="file://$PROJECT_DIR$/base_util/util_http/util_http.iml" filepath="$PROJECT_DIR$/base_util/util_http/util_http.iml" />
       <module fileurl="file://$PROJECT_DIR$/web_backstage/web_backstage.iml" filepath="$PROJECT_DIR$/web_backstage/web_backstage.iml" />
       <module fileurl="file://$PROJECT_DIR$/web_inter/web_inter.iml" filepath="$PROJECT_DIR$/web_inter/web_inter.iml" />
       <module fileurl="file://$PROJECT_DIR$/web_runner/web_runner.iml" filepath="$PROJECT_DIR$/web_runner/web_runner.iml" />

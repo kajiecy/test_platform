@@ -19,6 +19,7 @@
         <module>base_soap</module>
         <module>base-rongyun</module>
         <module>base_push</module>
+        <module>base_util</module>
     </modules>
     <properties>
         <!-- base setting -->
@@ -58,6 +59,12 @@
             <artifactId>javax.servlet-api</artifactId>
             <version>3.0.1</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.11.3</version>
         </dependency>
 
         <!--  测试 -->
