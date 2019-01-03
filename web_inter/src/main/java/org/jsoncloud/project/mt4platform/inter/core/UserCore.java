@@ -98,7 +98,7 @@ public class UserCore {
     }
 
 
-    public Map<String,Object> loginToLocal(Integer loginid,String pwd,Integer phonetype,String clientid,String token){
+    public Map<String,Object> loginToLocal(Integer loginid,String pwd,Integer phonetype,String clientid,String token,String applicationType){
 
         //匹配数据库判断是否登陆OK
         Map<String, Object> condition = new HashMap<String, Object>();
@@ -124,6 +124,7 @@ public class UserCore {
         //添加最新的用户数据到redis服务器
         login.put("login_token", new_token);
         login.put(Constants.PARAM_LOGIN_KIND, LoginTypeEnum.LOCAL_SERVER.getValue());
+        login.put(Constants.APPLICATION_TYPE, applicationType);
         userRedis.doLogin(old_token, new_token, login);
         //移除不必要的
         login.remove("pwd");
@@ -135,12 +136,13 @@ public class UserCore {
         returnInfo.put("balance", login.get("balance"));
         //寻找服务器讯息
         Service service = serviceMapper.selectByPrimaryKey(1);
-        returnInfo.put("serviceId", service.getId());
-        returnInfo.put("serviceName", service.getName());
-        returnInfo.put("serviceDesc", service.getServiceDesc());
-        returnInfo.put("serviceImg", service.getImg());
-        returnInfo.put("serviceType", service.getType());
-
+        if(service!=null){
+            returnInfo.put("serviceId", service.getId());
+            returnInfo.put("serviceName", service.getName());
+            returnInfo.put("serviceDesc", service.getServiceDesc());
+            returnInfo.put("serviceImg", service.getImg());
+            returnInfo.put("serviceType", service.getType());
+        }
         Login login_ = new Login();
         login_.setId(Integer.valueOf(login.get("id").toString()));
         login_.setName(login.get("name").toString());
@@ -152,7 +154,7 @@ public class UserCore {
                 .result();
     }
 
-    public Map<String,Object> loginToOutServer(Integer loginid,String pwd,Integer type,Integer phone_type,String clientid,String token,String serviceid) throws ServiceException, RemoteException {
+    public Map<String,Object> loginToOutServer(Integer loginid,String pwd,Integer type,Integer phone_type,String clientid,String token,String serviceid,String applicationType) throws ServiceException, RemoteException {
 
         MTMServiceLocator mtmServiceLocator = new MTMServiceLocator();
         MTMServiceSoap_PortType mtmServiceSoap_portType = mtmServiceLocator.getMTMServiceSoap12();
@@ -218,6 +220,7 @@ public class UserCore {
         map.put(Constants.PARAM_LOGIN_KIND, type);
         map.put(Constants.PARAM_LOGIN_TOKEN, new_token);
         map.put("group_name",accountDesc.getUser().getGroup());
+        map.put(Constants.APPLICATION_TYPE, applicationType);
         userRedis.doLogin(old_token, new_token, map);
 
         Login uptoken = new Login();

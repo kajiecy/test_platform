@@ -114,15 +114,16 @@ public class SymbolController extends BaseController {
         Integer login_id = (Integer) redisUser.get("id");
         Integer server_type = (Integer) redisUser.get(Constants.PARAM_LOGIN_KIND);
         String group_name = (String) redisUser.get("group_name");
+        String applicationType = (String) redisUser.get(Constants.APPLICATION_TYPE);
+//        String isStock = data.getStringNull("isStock");
         //由于业务修改此时组名已经不再是组名 需要通过 tbl_symbol_group表查询组名
         Map<String,Object> groupcondition = getCondition();
-        groupcondition.put("groupname",group_name);
+        if("USAStock".equals(applicationType)){
+            groupcondition.put("groupname","USAStock");
+        }else {
+            groupcondition.put("groupname",group_name);
+        }
         groupcondition = mybatisDao.selectMapOne("SymbolGroupMapper.selGroupByServer",groupcondition);
-
-
-
-
-
         List<Map<String,Object>> symbollist = null;
         if(groupcondition!=null&&groupcondition.get("symbol_type")!=null){
             Map<String,Object> condition = getCondition();
@@ -136,48 +137,52 @@ public class SymbolController extends BaseController {
 
         return  ResponseMap.success("success").data("symbollist",symbollist).result();
     }
-    /**
-     * 查询用户可添加的交易品种
-     * @param request
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping("/getSymbolList4USAStock.json")
-    public Map getSymbolList4USAStock(HttpServletRequest request){
-        RequestData data = new RequestBodyJSON(request);
-        Map<String, Object> redisUser = (Map<String, Object>) request.getAttribute(Constants.TOKEN_LOGIN_USER);
-        Integer login_id = (Integer) redisUser.get("id");
-        Integer server_type = (Integer) redisUser.get(Constants.PARAM_LOGIN_KIND);
-        String group_name = (String) redisUser.get("group_name");
-        //由于业务修改此时组名已经不再是组名 需要通过 tbl_symbol_group表查询组名
-        Map<String,Object> groupcondition = getCondition();
-        groupcondition.put("groupname","USAStock");
-        groupcondition = mybatisDao.selectMapOne("SymbolGroupMapper.selGroupByServer",groupcondition);
-
-        List<Map<String,Object>> symbollist = null;
-        if(groupcondition!=null&&groupcondition.get("symbol_type")!=null){
-            Map<String,Object> condition = getCondition();
-            condition.put("login_id",login_id);
-            condition.put("type",server_type);
-            condition.put("group_name",groupcondition.get("symbol_type"));
-            if(true){
-                symbollist = mybatisDao.selectMapList("SymbolMapper.selSymbolFilter",condition);
-            }
-        }
-
-        return  ResponseMap.success("success").data("symbollist",symbollist).result();
-    }
+//    /**
+//     * 查询用户可添加的交易品种
+//     * @param request
+//     * @return
+//     */
+//    @ResponseBody
+//    @RequestMapping("/getSymbolList4USAStock.json")
+//    public Map getSymbolList4USAStock(HttpServletRequest request){
+//        RequestData data = new RequestBodyJSON(request);
+//        Map<String, Object> redisUser = (Map<String, Object>) request.getAttribute(Constants.TOKEN_LOGIN_USER);
+//        Integer login_id = (Integer) redisUser.get("id");
+//        Integer server_type = (Integer) redisUser.get(Constants.PARAM_LOGIN_KIND);
+//        String group_name = (String) redisUser.get("group_name");
+//        //由于业务修改此时组名已经不再是组名 需要通过 tbl_symbol_group表查询组名
+//        Map<String,Object> groupcondition = getCondition();
+//        groupcondition.put("groupname","USAStock");
+//        groupcondition = mybatisDao.selectMapOne("SymbolGroupMapper.selGroupByServer",groupcondition);
+//
+//        List<Map<String,Object>> symbollist = null;
+//        if(groupcondition!=null&&groupcondition.get("symbol_type")!=null){
+//            Map<String,Object> condition = getCondition();
+//            condition.put("login_id",login_id);
+//            condition.put("type",server_type);
+//            condition.put("group_name",groupcondition.get("symbol_type"));
+//            if(true){
+//                symbollist = mybatisDao.selectMapList("SymbolMapper.selSymbolFilter",condition);
+//            }
+//        }
+//
+//        return  ResponseMap.success("success").data("symbollist",symbollist).result();
+//    }
     @ResponseBody
     @RequestMapping("/getSymbolUse.json")
     public Map getSymbolUse(HttpServletRequest request){
         Map<String, Object> redisUser = (Map<String, Object>) request.getAttribute(Constants.TOKEN_LOGIN_USER);
         Integer login_id = (Integer) redisUser.get("id");
         Integer server_type = (Integer) redisUser.get(Constants.PARAM_LOGIN_KIND);
+
+        String applicationType = (String) redisUser.get(Constants.APPLICATION_TYPE);
+
         Map<String,Object> condition = getCondition();
         condition.put("login_id",login_id);
         condition.put("type",server_type);
+        condition.put("application_type",applicationType);
         List<Map<String,Object>> symbollist;
-        symbollist = mybatisDao.selectMapList("SymbolMapper.getUseSymbol",condition);
+        symbollist = mybatisDao.selectMapList("SymbolMapper.getUseSymbolWithStock",condition);
         return  ResponseMap.success("success").data("symbollist",symbollist).result();
     }
     @ResponseBody
@@ -189,17 +194,17 @@ public class SymbolController extends BaseController {
         Integer server_type = (Integer) redisUser.get(Constants.PARAM_LOGIN_KIND);
         String symbols = data.getStringMust("symbol","symbol缺失");
 
+        String applicationType = (String) redisUser.get(Constants.APPLICATION_TYPE);
+
         List<String> split = (List<String>)(JSON.parse(symbols));
 
         for (String symbol: split){
-
             Map<String,Object> condition = getCondition();
             condition.put("login_id",login_id);
             condition.put("type",server_type);
             condition.put("symbol",symbol);
-            List<Map<String,Object>> symbollist;
-            mybatisDao.update("SymbolMapper.addUseSymbol",condition);
-
+            condition.put("application_type",applicationType);
+            mybatisDao.update("SymbolMapper.addUseSymbolWithStock",condition);
         }
         return  ResponseMap.success("success").result();
     }

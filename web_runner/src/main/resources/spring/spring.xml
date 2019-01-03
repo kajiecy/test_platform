@@ -118,7 +118,6 @@
     <bean class="org.jsoncloud.project.mt4platform.runner.controller.NewsController" id="newsController"
           init-method="init"/>
     <task:scheduled-tasks>
-        <!--修正报价的最高最和最低值-->
         <task:scheduled ref="newsController" method="getJinShiMessage" cron="0 0/1 * * * ?"/>
     </task:scheduled-tasks>
 

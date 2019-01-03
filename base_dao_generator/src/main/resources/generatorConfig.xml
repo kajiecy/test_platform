@@ -22,9 +22,9 @@
 
         <jdbcConnection
                 driverClass="com.mysql.jdbc.Driver"
-                connectionURL="jdbc:mysql://127.0.0.1:3306/mt4_platform"
+                connectionURL="jdbc:mysql://121.199.34.161:3306/mt4_platform"
                 userId="root"
-                password="112233">
+                password="Tk52bb8970">
         </jdbcConnection>
 
         <javaTypeResolver >
