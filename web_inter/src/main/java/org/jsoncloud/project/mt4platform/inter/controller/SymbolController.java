@@ -100,6 +100,12 @@ public class SymbolController extends BaseController {
         }
         return ResponseMap.error("Fail：" + symbol + "不存在").result();
     }
+
+    /**
+     * 查询用户可添加的交易品种
+     * @param request
+     * @return
+     */
     @ResponseBody
     @RequestMapping("/getSymbolList.json")
     public Map getSymbolList(HttpServletRequest request){
@@ -130,7 +136,37 @@ public class SymbolController extends BaseController {
 
         return  ResponseMap.success("success").data("symbollist",symbollist).result();
     }
+    /**
+     * 查询用户可添加的交易品种
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/getSymbolList4USAStock.json")
+    public Map getSymbolList4USAStock(HttpServletRequest request){
+        RequestData data = new RequestBodyJSON(request);
+        Map<String, Object> redisUser = (Map<String, Object>) request.getAttribute(Constants.TOKEN_LOGIN_USER);
+        Integer login_id = (Integer) redisUser.get("id");
+        Integer server_type = (Integer) redisUser.get(Constants.PARAM_LOGIN_KIND);
+        String group_name = (String) redisUser.get("group_name");
+        //由于业务修改此时组名已经不再是组名 需要通过 tbl_symbol_group表查询组名
+        Map<String,Object> groupcondition = getCondition();
+        groupcondition.put("groupname","USAStock");
+        groupcondition = mybatisDao.selectMapOne("SymbolGroupMapper.selGroupByServer",groupcondition);
 
+        List<Map<String,Object>> symbollist = null;
+        if(groupcondition!=null&&groupcondition.get("symbol_type")!=null){
+            Map<String,Object> condition = getCondition();
+            condition.put("login_id",login_id);
+            condition.put("type",server_type);
+            condition.put("group_name",groupcondition.get("symbol_type"));
+            if(true){
+                symbollist = mybatisDao.selectMapList("SymbolMapper.selSymbolFilter",condition);
+            }
+        }
+
+        return  ResponseMap.success("success").data("symbollist",symbollist).result();
+    }
     @ResponseBody
     @RequestMapping("/getSymbolUse.json")
     public Map getSymbolUse(HttpServletRequest request){

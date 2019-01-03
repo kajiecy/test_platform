@@ -198,11 +198,14 @@ public class UserCore {
         }
         //寻找服务器讯息
         Service service = serviceMapper.selectByPrimaryKey(Integer.parseInt(serviceid));
-        returnInfo.put("serviceId", service.getId());
-        returnInfo.put("serviceName", service.getName());
-        returnInfo.put("serviceDesc", service.getServiceDesc());
-        returnInfo.put("serviceImg", service.getImg());
-        returnInfo.put("serviceType", service.getType());
+        if(service!=null){
+            returnInfo.put("serviceId", service.getId());
+            returnInfo.put("serviceName", service.getName());
+            returnInfo.put("serviceDesc", service.getServiceDesc());
+            returnInfo.put("serviceImg", service.getImg());
+            returnInfo.put("serviceType", service.getType());
+        }
+
 
         //通过接口检查用户的密码成功后 分配一个token
         String new_token = TokenUtil.getInstance().generateToken(loginid.toString(), true);

@@ -94,12 +94,12 @@ public class GetSymbolController extends BaseController {
         for (Map<String, Object> symbolMap : infolist){
             symbols.add((String) symbolMap.get("symbol"));
         }
-        symbolList1 = symbols.subList(0,20);
-        symbolList2 = symbols.subList(20,40);
-        symbolList3 = symbols.subList(40,60);
-        symbolList4 = symbols.subList(60,80);
-        symbolList5 = symbols.subList(80,100);
-        symbolList6 = symbols.subList(100,symbols.size());
+        symbolList1 = symbols.subList(0,34);
+        symbolList2 = symbols.subList(34,67);
+        symbolList3 = symbols.subList(67,100);
+        symbolList4 = symbols.subList(100,134);
+        symbolList5 = symbols.subList(134,167);
+        symbolList6 = symbols.subList(167,symbols.size());
         this.strSymbols = StringUtils.join(symbols, ",");
         this.strSymbols1 = StringUtils.join(symbolList1,",");
         this.strSymbols2 = StringUtils.join(symbolList2,",");

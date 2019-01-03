@@ -7,6 +7,7 @@ import org.jsoncloud.framework.sms.PropertiesUtil;
 import org.jsoncloud.framework.util.DateUtil;
 import org.jsoncloud.framework.util.StringUtil;
 import org.jsoncloud.framework.util.TokenUtil;
+import org.jsoncloud.framework.verifcode.img.ImgCodeBean;
 import org.jsoncloud.framework.verifcode.sms.SmsCodeBean;
 import org.jsoncloud.framework.verifcode.sms.SmsCodeTypeEnum;
 import org.jsoncloud.framework.web.request.RequestBodyJSON;
@@ -37,6 +38,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -179,8 +181,10 @@ public class CommonController extends BaseController {
         logger.debug(data.getStringMust("loginid", "请输入登陆id"));
         Integer loginid = Integer.parseInt(data.getStringMust("loginid", "请输入登陆id"));
         String pwd = data.getStringMust("pwd", "请输入密码");
-        Integer logintype = data.getIntMust("type", "登录类型");
-
+        Integer logintype = data.getIntNull("type");
+        if(logintype==null){
+            logintype = LoginTypeEnum.DEMO_SERVER.getValue();
+        }
         Integer phonetype = data.getIntNull("phonetype");
         String clientid = data.getStringNull("clientid");
         String token = data.getStringNull("token");
@@ -413,6 +417,151 @@ public class CommonController extends BaseController {
     }
 
     /**
+     * 注册
+     *
+     * @throws
+     */
+    @ResponseBody
+    @RequestMapping("/reg4USAStock.json")
+    public Map<String, Object> reg4USAStock(HttpServletRequest request) throws RemoteException, UnsupportedEncodingException, ServiceException{
+        // 获取传参的参数
+        RequestData data = new RequestBodyJSON(request);
+        String code = data.getStringMust("code", "验证码不能为空！");
+        String phone = data.getStringMust("phone", "手机号不能为空");
+        String name = data.getStringMust("name", "姓名不能为空");
+        String qqnum = data.getStringMust("qqnum", "QQ号码不能为空！");
+        String email = data.getStringMust("email", "Email不能为空");
+        String code_token = data.getStringMust(Constants.PARAM_CODE_TOKEN, "CodeToken缺失！");
+        Integer money = data.getIntMust("money", "请输入金额");
+        String pwd = InterUtil.createPwd();
+//      代理人id
+        Integer referees_id = null;
+
+        Map<String, Object> condition = getCondition();
+        Map<String, Object> refereesinfo = null;
+//        // 判断 用户输入的验证码 和 生成的验证码是否一致
+        if (!redisSmsCodeManager.compareCode(code_token, code, phone, SmsCodeTypeEnum.REGISTER.getType())){
+            return ResponseMap.error(ErrorEnum.INVALID_LOST.getCode(), "验证码错误").result();
+        }
+
+
+        //添加注册的用户
+//        向测试服务器发送请求 创建账户 创建好账户后记录下账户信息 放到login表中
+
+        User user = new User();
+        user.setPhone(phone);
+        user.setCreateTime(new Date());
+        user.setName(name);
+        user.setQqnum(qqnum);
+        user.setEmail(email);
+        user.setFrom("美股APP");
+        MTMServiceLocator mtmServiceLocator = new MTMServiceLocator();
+        MTMServiceSoap_PortType mtmServiceSoap_portType = mtmServiceLocator.getMTMServiceSoap12();
+        UserRecordCS userRecordCS = new UserRecordCS();
+
+        userRecordCS.setLogin(0);
+        userRecordCS.setGroup("demoadvanced");
+        userRecordCS.setPassword(pwd);
+        userRecordCS.setEnable(1);
+        userRecordCS.setEnable_change_password(1);
+        userRecordCS.setEnable_read_only(0);
+        userRecordCS.setPassword_investor(pwd);
+        userRecordCS.setPassword_phone(pwd);
+        HanyuPinyinHelper hanyuPinyinHelper = new HanyuPinyinHelper();
+        userRecordCS.setName(hanyuPinyinHelper.toHanyuPinyin(name));
+        userRecordCS.setCountry("china");
+        userRecordCS.setCity("china");
+        userRecordCS.setState("china");
+        userRecordCS.setZipcode("1222");
+        userRecordCS.setAddress("china");
+        userRecordCS.setPhone(phone);
+        userRecordCS.setEmail(email);
+        userRecordCS.setComment("china");
+        userRecordCS.setId("");
+        userRecordCS.setStatus("1");
+        int time = Integer.valueOf(DateUtil.date2String(user.getCreateTime(), "yyyyMMdd"));
+        userRecordCS.setRegdate(time);
+        userRecordCS.setLastdate(time);
+        userRecordCS.setLeverage(100);
+        userRecordCS.setAgent_account(22);
+        userRecordCS.setTimestamp(new Long(new Date().getTime()/1000).intValue());
+        userRecordCS.setBalance(money);
+        userRecordCS.setPrevmonthbalance(0);
+        userRecordCS.setPrevbalance(0);
+        userRecordCS.setCredit(0);
+        userRecordCS.setInterestrate(0);
+        userRecordCS.setTaxes(0);
+        userRecordCS.setPublickey("");
+        userRecordCS.setSend_reports(1);
+        userRecordCS.setBalance_status(1);
+        userRecordCS.setUser_color(0xffffff);
+        userRecordCS.setApi_data("");
+
+        ManagerInfo managerInfo = new ManagerInfo();
+        managerInfo.setLogin(PropertiesUtil.getInt("test_login"));
+        managerInfo.setPassword(PropertiesUtil.get("test_pwd"));
+        managerInfo.setServer(PropertiesUtil.get("test_addr"));
+        userRecordCS = mtmServiceSoap_portType.addNewUser(userRecordCS, managerInfo);
+        //创建模拟服务器用户成功后为user表数据
+        //为login表添加数据
+        user.setLoginName(userRecordCS.getLogin()+"");
+        user.setLoginPwd(pwd);
+//        if (!userCore.hasUserByPhone(phone)){
+//            user.setName(AESUtil.encrypt(user.getName()));
+//            user.setPhone(AESUtil.encrypt(user.getPhone()));
+//            user.setQqnum(AESUtil.encrypt(user.getQqnum()));
+//            user.setEmail(AESUtil.encrypt(user.getEmail()));
+        userMapper.insertSelective(user);
+//        }
+
+
+        Login login = new Login();
+        login.setId(userRecordCS.getLogin());
+        login.setName(name);
+        login.setPwd(pwd);
+        login.setGroupName(PropertiesUtil.get("default_group"));
+        login.setRegdate(new Date());
+        login.setBalance(new BigDecimal(money.toString()));
+        loginMapper.insertSelective(login);
+
+        Email email1 = new Email();
+        email1.setLoginId(Integer.valueOf(userRecordCS.getLogin()));
+        email1.setPassword(login.getPwd());
+        email1.setServerType(LoginTypeEnum.LOCAL_SERVER.getValue());
+        this.emailMapper.insertSelective(email1);
+        Email email2 = new Email();
+        email2.setLoginId(Integer.valueOf(userRecordCS.getLogin()));
+        email2.setPassword(login.getPwd());
+        email2.setServerType(LoginTypeEnum.DEMO_SERVER.getValue());
+        this.emailMapper.insertSelective(email2);
+        //给用户 账户添加金额
+//      (int account, double amount, Boolean zero_funds, String comment, org.jsoncloud.project.mt4_platform.soap.ManagerInfo manager)
+        IntHolder result_code = new IntHolder();
+        IntHolder error_code = new IntHolder();
+
+        mtmServiceSoap_portType.balanceNewRecord(userRecordCS.getLogin(), money, false, "system", managerInfo,result_code,error_code);
+        login.setId(userRecordCS.getLogin());
+        //发送短信
+        SmsCodeManager.sendUserInfoSuccess(phone,login.getId().toString(),login.getPwd());
+
+//        注册成功后默认添加默认的交易品种
+        String[] symbols = new String[]{};
+        for(String symbol_m:symbols){
+            Map<String,Object> condition1 = getCondition();
+            condition1.put("login_id",login.getId());
+            condition1.put("type",1);
+            condition1.put("symbol",symbol_m);
+            mybatisDao.update("SymbolMapper.addUseSymbol",condition1);
+            Map<String,Object> condition2 = getCondition();
+            condition2.put("login_id",login.getId());
+            condition2.put("type",2);
+            condition2.put("symbol",symbol_m);
+            mybatisDao.update("SymbolMapper.addUseSymbol",condition2);
+        }
+        return ResponseMap.success("注册成功").data("info", login).result();
+    }
+
+    /**
      * 忘记密码
      *
      * @throws
@@ -520,6 +669,56 @@ public class CommonController extends BaseController {
                 .data("code", bean.getCode())
                 .result();
     }
+
+
+    /**
+     * 发送验证验证码
+     *
+     * @throws
+     */
+    @ResponseBody
+    @RequestMapping("/smsCode.json")
+    @Transactional
+    public Map<String, Object> smsCode(HttpServletRequest request, HttpSession session) {
+        RequestData data = new RequestBodyJSON(request);
+        String phone = data.getStringMust("phone", "请输入手机号码");
+//        int type = data.getIntMust("type", "请输入验证码类型");
+        int type = 0;
+        String img_code = data.getStringMust("img_code", "请输入图片验证码");
+//        //获取验证码的token,如果存在就覆盖发送即可
+        String code_token = data.getStringMust(Constants.PARAM_CODE_TOKEN, "验证码token必填");
+//        String code_token = null;
+        if (!redisImgCodeManager.compareCode(code_token, img_code)) {
+            return ResponseMap.error(ErrorEnum.INVALID_VALUE.getCode(), "图片验证码错误").result();
+        }
+
+        SmsCodeTypeEnum codeTypeEnum = null;
+        String tempname = null;
+            codeTypeEnum = SmsCodeTypeEnum.REGISTER;
+            tempname = "sms_chuanglan_USAStock_register";
+//            if (userCore.hasUserByPhone(phone)) {
+//                return ResponseMap.error(ErrorEnum.INVALID_VALUE.getCode(), "该手机号已经注册").result();
+//            }
+        if (code_token == null) {
+            code_token = TokenUtil.getInstance().generateToken(phone, true);
+        }
+        SmsCodeBean bean = redisSmsCodeManager.buildSmsCode(code_token, phone, codeTypeEnum.getType());
+        boolean sendOk = redisSmsCodeManager.sendCodehuangLan(bean
+                , tempname);
+        if (!sendOk) {
+            return ResponseMap.error(ErrorEnum.INVALID_LOST.getCode(), "发送失败").result();
+        }
+        ResponseMap responseMap = ResponseMap.success("发送成功，请注意查收")
+                .data(Constants.PARAM_CODE_TOKEN, code_token);
+        if (PropertiesUtil.smsDebug()){//如果是短信测试，就输出当前的code
+            responseMap.data("code", bean.getCode());
+        }
+        return responseMap
+                .data(Constants.PARAM_CODE_TOKEN, code_token)
+                .data("code", bean.getCode())
+                .result();
+    }
+
 
     @ResponseBody
     @RequestMapping("/getServiceList.json")

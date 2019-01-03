@@ -15,11 +15,10 @@ public class HttpTest {
     private static final String jinshiUrl  = "https://partner-api.jin10.com/?max_id=0&count=50";
 
     public static void main(String[] args) {
-//        getJinShiNews();
+        //getJinShiNews();
         getHuaErJieNews();
-
     }
-    public static void getHuaErJieNews(){
+    private static void getHuaErJieNews(){
         String result = HttpUtil.sendGet(huaerjieUrl,null);
         JSONObject jsonObj = (JSONObject)JSON.parse(result);
         JSONArray jsonArray = jsonObj.getJSONObject("data").getJSONArray("items");
@@ -50,7 +49,7 @@ public class HttpTest {
         System.out.println(jsonObj);
 
     }
-    public static void getJinShiNews(){
+    private static void getJinShiNews(){
         String result = HttpUtil.sendGet(jinshiUrl,null);
         JSONObject jsonObj = (JSONObject)JSON.parse(result);
         JSONArray infos = jsonObj.getJSONArray("infos");

@@ -37,5 +37,17 @@ public abstract class SmsCodeManager {
             return SmsChuangLanUtil.send(phone, sms);
         }
     }
+
+    public static boolean sendUserInfoSuccess(String phone,String login,String pwd) {
+        String temp = PropertiesUtil.get("sms_chuanglan_USAStock_infoshow");
+        if (StringUtil.hasEmpty(temp)){
+            logger.error("CHUANGLNA 发送的短信模版[sms_chuanglan_user_infoshow]没有配置");
+            return false;
+        } else {
+            String sms = temp.replace("${name}", login).replace("${pwd}",pwd);
+            logger.info("sendSMS##"+sms);
+            return SmsChuangLanUtil.send(phone, sms);
+        }
+    }
 }
 
