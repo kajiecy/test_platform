@@ -59,7 +59,7 @@ public class NewsController  extends BaseController {
             String title = jsonObjectItem.getString("title");//标题
 //            System.out.println(jsonObjectItem);
             /**
-             * 先根据ID查询 是否存在 此条 id的信息
+             * 先根据ID查询是否存在此条id的信息
              * 如果 没有 插入此条记录
              */
 
