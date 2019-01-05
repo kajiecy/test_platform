@@ -316,7 +316,7 @@ public class CommonController extends BaseController {
         user.setName(name);
         user.setQqnum(qqnum);
         user.setEmail(email);
-        user.setFrom(isStock);
+        user.setUserFrom(isStock);
 
         MTMServiceLocator mtmServiceLocator = new MTMServiceLocator();
         MTMServiceSoap_PortType mtmServiceSoap_portType = mtmServiceLocator.getMTMServiceSoap12();
@@ -436,7 +436,7 @@ public class CommonController extends BaseController {
             condition2.put("login_id",login.getId());
             condition2.put("type",2);
             condition2.put("symbol",symbol_m);
-            condition1.put("application_type","USAStock");
+            condition2.put("application_type","USAStock");
             mybatisDao.update("SymbolMapper.addUseSymbolWithStock",condition2);
         }
         return ResponseMap.success("注册成功").data("info", login).result();
@@ -444,7 +444,6 @@ public class CommonController extends BaseController {
 
     /**
      * 忘记密码
-     *
      * @throws
      */
     @ResponseBody

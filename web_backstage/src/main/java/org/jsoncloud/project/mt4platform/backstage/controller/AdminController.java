@@ -71,6 +71,9 @@ public class AdminController extends BaseController {
         String endDate = data.getStringNull("endDate");
         String searchParam = data.getStringNull("searchParam");
         String searchType = data.getStringNull("searchType");
+        if(searchType != null){
+            searchType = searchType.trim();
+        }
         String color = data.getStringNull("color");
         Integer group = data.getIntNull("group");
 

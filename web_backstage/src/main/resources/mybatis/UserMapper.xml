@@ -4,7 +4,7 @@
     <!-- 查询所有用户 -->
     <select id="selectAllUser" parameterType="map" resultType="map">
         SELECT
-        u.create_time,u.email,u.flag,u.id,u.login_name,u.name,u.phone,u.qqnum,u.update_time,u.color,u.remark,u.from,tug.group_name
+        u.create_time,u.email,u.flag,u.id,u.login_name,u.name,u.phone,u.qqnum,u.update_time,u.color,u.remark,u.user_from,tug.group_name
         FROM tbl_user AS u
         LEFT JOIN tbl_user_group tug ON u.user_group_id = tug.id
         WHERE 1=1
@@ -30,7 +30,7 @@
             AND u.qqnum LIKE #{qq}
         </if>
         <if test="from != null">
-            AND u.from LIKE #{from}
+            AND u.user_from LIKE #{from}
         </if>
         <if test="color != null and color != '#ffffff'">
             AND u.color LIKE #{color}

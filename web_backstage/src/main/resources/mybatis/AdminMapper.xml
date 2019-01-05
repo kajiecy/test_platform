@@ -43,7 +43,7 @@
             AND u.qqnum LIKE #{qq}
         </if>
         <if test="from != null">
-            AND u.from LIKE #{from}
+            AND u.user_from LIKE #{from}
         </if>
         <if test="color != null and color != '#ffffff'">
             AND u.color LIKE #{color}

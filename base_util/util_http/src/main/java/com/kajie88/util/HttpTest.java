@@ -47,7 +47,6 @@ public class HttpTest {
             System.out.println(jsonObjectItem);
         }
         System.out.println(jsonObj);
-
     }
     private static void getJinShiNews(){
         String result = HttpUtil.sendGet(jinshiUrl,null);
