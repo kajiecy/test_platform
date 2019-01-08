@@ -109,7 +109,7 @@ public class NewController extends BaseController{
         RequestBodyJSON data = new RequestBodyJSON(request);
         int newsId = data.getIntMust("newsId","新闻id不能为空");
         int isInnerNews = data.getIntMust("isInnerNews","isInnerNews字段必传");
-        
+        newsCore.changeNewsPraiseCount(newsId,isInnerNews,clientIP);
 
 
         return null;

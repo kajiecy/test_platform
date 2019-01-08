@@ -3,6 +3,9 @@
 <mapper namespace="NewsMapper" >
   <select id="selectList"  parameterType="map" resultType="map" >
     SELECT * FROM tbl_news WHERE 1 = 1
+    <if test="id!=null">
+      AND id = #{id}
+    </if>
     <if test="param!=null">
       AND title LIKE #{param}
     </if>
@@ -49,4 +52,47 @@
   </select>
 
 
+  <select id="selectPraiseInfo" parameterType="map" resultType="map">
+    SELECT * FROM tbl_news_praise
+    WHERE 1=1
+    <if test="id!=null">
+      and id = #{id}
+    </if>
+    <if test="innews_kind!=null">
+      and innews_kind = #{innews_kind}
+    </if>
+    <if test="operator_ip!=null">
+      and operator_ip = #{operator_ip}
+    </if>
+    <if test="news_id!=null">
+      and news_id = #{news_id}
+    </if>
+  </select>
+
+  <insert id="addPraiseInfo" parameterType="map">
+    INSERT INTO `tbl_news_praise`
+    (innews_kind,news_id,operator_ip,create_time)
+    VALUES (#{innews_kind},#{news_id},#{operator_ip},#{create_time});
+  </insert>
+
+  <delete id="delPraiseInfo" parameterType="java.lang.Integer" >
+    DELETE FROM `tbl_news_praise` WHERE id = #{id}
+  </delete>
+
+  <update id="changeNewsPraiseCount" parameterType="map">
+    UPDATE
+    <if test="isInnerNews==1">
+      tbl_news_out
+    </if>
+    <if test="isInnerNews!=1">
+      tbl_news
+    </if>
+    <if test="operator=='+'">
+      SET praise_count = praise_count + 1
+    </if>
+    <if test="operator=='-'">
+      SET praise_count = praise_count - 1
+    </if>
+    WHERE id = #{id};
+  </update>
 </mapper>
