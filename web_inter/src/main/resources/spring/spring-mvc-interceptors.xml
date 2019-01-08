@@ -13,12 +13,17 @@
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
             <mvc:exclude-mapping path="/common/**"/>
+            <mvc:exclude-mapping path="/news/**"/>
             <mvc:exclude-mapping path="/test/**"/>
             <mvc:exclude-mapping path="/chart/**"/>
             <bean class="org.jsoncloud.project.mt4platform.inter.interceptor.LoginUserInterceptor">
                 <property name="userRedis" ref="userRedis"/>
             </bean>
         </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/news/**"/>
+            <mvc:mapping path="/common/**"/>
+            <bean class="org.jsoncloud.project.mt4platform.inter.interceptor.ProcessInterceptor"></bean>
+        </mvc:interceptor>
     </mvc:interceptors>
-
 </beans>

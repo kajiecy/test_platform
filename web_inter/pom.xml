@@ -72,6 +72,11 @@
             <artifactId>pinyin4j</artifactId>
             <version>2.5.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.jsoncloud.project.mt4_platform</groupId>
+            <artifactId>util_page</artifactId>
+            <version>1.0</version>
+        </dependency>
 
     </dependencies>
     <repositories>

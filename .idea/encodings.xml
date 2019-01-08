@@ -10,8 +10,8 @@
     <file url="file://$PROJECT_DIR$/base_push" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/base_soap" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/base_util" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/base_util/util-okhttp" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/base_util/util_http" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/base_util/util_page" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/web_backstage" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/web_inter" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/web_runner" charset="UTF-8" />

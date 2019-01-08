@@ -13,15 +13,9 @@
     </select>
 
     <!-- 注册 -->
-    <insert id="reg" parameterType="map" useGeneratedKeys="true" keyProperty="id">
-        insert into tbl_user (pwd,phone,create_time,nickname
-        <if test="mone y_bean!=null">
-            ,money_bean
-        </if>
-        ) values (#{pwd},#{phone},now(),#{phone}
-        <if test="money_bean!=null">
-            ,#{money_bean}
-        </if>
-        )
+    <insert id="addNewsOut" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `tbl_news_out`
+        (news_id,news_source,article,content,image_uris,score,create_time,jinshi_content)
+        VALUES(#{news_id},#{news_source},#{article},#{content},#{image_uris},#{score},#{create_time},#{jinshi_content});
     </insert>
 </mapper>

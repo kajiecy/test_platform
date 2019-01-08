@@ -15,11 +15,11 @@ public class HttpTest {
     private static final String jinshiUrl  = "https://partner-api.jin10.com/?max_id=0&count=50";
 
     public static void main(String[] args) {
-        //getJinShiNews();
+//        getJinShiNews();
         getHuaErJieNews();
     }
     private static void getHuaErJieNews(){
-        String result = HttpUtil.sendGet(huaerjieUrl,null);
+        String result = HttpUtil.sendPost(huaerjieUrl,null);
         JSONObject jsonObj = (JSONObject)JSON.parse(result);
         JSONArray jsonArray = jsonObj.getJSONObject("data").getJSONArray("items");
         /**
@@ -67,7 +67,7 @@ public class HttpTest {
              * 8  存在内容 0 但不明确含义
              * 9
              * 10
-             * 11
+             * 11 日期可用作id
              * */
             //先想文字文字 以####0###分开
             String[] strings = infos.getString(i).split("#");

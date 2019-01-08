@@ -14,6 +14,7 @@
         <module name="base_push" />
         <module name="base_soap" />
         <module name="util_http" />
+        <module name="util_page" />
         <module name="web_backstage" />
         <module name="web_inter" />
         <module name="web_runner" />
@@ -31,6 +32,7 @@
       <module name="mt4_platform" target="1.7" />
       <module name="util-okhttp" target="1.7" />
       <module name="util_http" target="1.7" />
+      <module name="util_page" target="1.7" />
       <module name="web_backstage" target="1.7" />
       <module name="web_inter" target="1.7" />
       <module name="web_runner" target="1.7" />

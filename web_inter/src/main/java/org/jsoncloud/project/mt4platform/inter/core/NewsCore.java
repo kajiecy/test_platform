@@ -82,4 +82,12 @@ public class NewsCore {
         return newsMapper;
     }
 
+    public void changeNewsPraiseCount(int newsIds,int isInnerNews,String userIp){
+        //逻辑 先去数据库 中 查询 此ip是否点赞过 此条news
+        //如果 有记录 删除此条记录 此条news 的 praise_count-1
+        //如果 没有 添加一条记录 此条noew 的 praise_count+1
+
+        
+
+    }
 }

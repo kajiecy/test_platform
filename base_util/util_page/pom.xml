@@ -3,16 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>mt4_platform</artifactId>
+        <artifactId>base_util</artifactId>
         <groupId>org.jsoncloud.project.mt4_platform</groupId>
         <version>1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>base_util</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>util_http</module>
-        <module>util_page</module>
-    </modules>
+    <artifactId>util_page</artifactId>
+
+
 </project>

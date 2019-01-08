@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +63,6 @@ public class NewsController  extends BaseController {
              * 先根据ID查询是否存在此条id的信息
              * 如果 没有 插入此条记录
              */
-
             Map<String,Object> condition = getCondition();
             condition.put("news_id",id);
             List<Map<String, Object>> resultList = this.mybatisDao.selectMapList("NewsMapper.getNewsById", condition);
@@ -75,12 +75,9 @@ public class NewsController  extends BaseController {
                 insertSource.put("content",content);
                 insertSource.put("image_uris",image_uris);
                 insertSource.put("score",score);
-
-
-
+                insertSource.put("create_time",new Date());
+                this.mybatisDao.insert("NewsMapper.addNewsOut",insertSource);
             }
-
-
         }
 //        System.out.println(jsonObj);
     }
@@ -104,7 +101,7 @@ public class NewsController  extends BaseController {
              * 8  存在内容 0 但不明确含义
              * 9
              * 10
-             * 11
+             * 11 日期可用作id
              * */
             //先想文字文字 以####0###分开
             String[] strings = infos.getString(i).split("#");
@@ -120,9 +117,27 @@ public class NewsController  extends BaseController {
             String string9 = strings[9];
             String string10 = strings[10];
             String string11 = strings[11];
-            jinShiDataList.add(strings);
+//            jinShiDataList.add(strings);
+
+            /**
+             * 先根据ID查询是否存在此条id的信息
+             * 如果 没有 插入此条记录
+             */
+            Map<String,Object> condition = getCondition();
+            condition.put("news_id",string11);
+            List<Map<String, Object>> resultList = this.mybatisDao.selectMapList("NewsMapper.getNewsById", condition);
+            if(!(resultList!=null&&resultList.size()>0)){
+                //向数据库中添加一条记录
+                Map<String,Object> insertSource = getCondition();
+                insertSource.put("news_id",string11);
+                insertSource.put("news_source","jinshi");
+                insertSource.put("jinshi_content",infos.getString(i));
+                insertSource.put("create_time",new Date());
+                this.mybatisDao.insert("NewsMapper.addNewsOut",insertSource);
+            }
+
         }
-        System.out.println(jinShiDataList);
+//        System.out.println(jinShiDataList);
     }
 
     //封装httpClient的get请求
@@ -149,7 +164,7 @@ public class NewsController  extends BaseController {
             }
             // 定义 BufferedReader输入流来读取URL的响应
             in = new BufferedReader(new InputStreamReader(
-                    connection.getInputStream()));
+                    connection.getInputStream(), "UTF-8"));
             String line;
             while ((line = in.readLine()) != null) {
                 result += line;
