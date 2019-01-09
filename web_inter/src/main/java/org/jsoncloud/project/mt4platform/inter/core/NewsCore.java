@@ -100,7 +100,7 @@ public class NewsCore {
 
             Map<String,Object> changeCountCondition = new HashMap<>();
             changeCountCondition.put("isInnerNews",isInnerNews);
-            changeCountCondition.put("operator","-");
+            changeCountCondition.put("operator",0);
             changeCountCondition.put("id",newsId);
             mybatisDao.update("NewsMapper.changeNewsPraiseCount",changeCountCondition);
         }else {
@@ -110,7 +110,7 @@ public class NewsCore {
 
             Map<String,Object> changeCountCondition = new HashMap<>();
             changeCountCondition.put("isInnerNews",isInnerNews);
-            changeCountCondition.put("operator","+");
+            changeCountCondition.put("operator",1);
             changeCountCondition.put("id",newsId);
             mybatisDao.update("NewsMapper.changeNewsPraiseCount",changeCountCondition);
         }

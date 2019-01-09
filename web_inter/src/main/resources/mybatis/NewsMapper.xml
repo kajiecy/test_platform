@@ -82,15 +82,15 @@
   <update id="changeNewsPraiseCount" parameterType="map">
     UPDATE
     <if test="isInnerNews==1">
-      tbl_news_out
-    </if>
-    <if test="isInnerNews!=1">
       tbl_news
     </if>
-    <if test="operator=='+'">
+    <if test="isInnerNews!=1">
+      tbl_news_out
+    </if>
+    <if test="operator==1">
       SET praise_count = praise_count + 1
     </if>
-    <if test="operator=='-'">
+    <if test="operator==0">
       SET praise_count = praise_count - 1
     </if>
     WHERE id = #{id};
