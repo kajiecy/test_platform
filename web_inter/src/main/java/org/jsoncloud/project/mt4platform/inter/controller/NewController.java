@@ -79,6 +79,18 @@ public class NewController extends BaseController{
         pageInfo.setTotalCount(totalCount);
         return ResponseMap.success("success").data("pageInfo",pageInfo).data("list",resultList).result();
     }
+
+    //获取最新的五条推荐新闻
+    @RequestMapping(value = "/getNewsRecommend.json", method = RequestMethod.POST)
+    public Map getNewsRecommend(HttpServletRequest request) {
+        RequestBodyJSON data = new RequestBodyJSON(request);
+        Map<String,Object> condition = getCondition();
+        condition.put("top5",1);
+        condition.put("is_recommend",1);
+        List<Map<String, Object>> resultList = this.mybatisDao.selectMapList("NewsMapper.selectNewsList", condition);
+        return ResponseMap.success("success").data("list",resultList).result();
+    }
+
     @RequestMapping(value = "/getNewsOutList.json", method = RequestMethod.POST)
     public Map getNewsOutList(HttpServletRequest request) {
         RequestBodyJSON data = new RequestBodyJSON(request);
