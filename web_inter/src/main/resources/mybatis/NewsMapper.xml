@@ -30,8 +30,16 @@
     <if test="title!=null">
       AND title LIKE CONCAT('%',#{title},'%')
     </if>
+    <if test="is_recommend!=null">
+      AND is_recommend = #{is_recommend}
+    </if>
     ORDER BY create_time DESC
-    LIMIT #{startIndex},#{pageSize}
+    <if test="top5!=1">
+      LIMIT #{startIndex},#{pageSize}
+    </if>
+    <if test="top5==1">
+      LIMIT 0,5
+    </if>
   </select>
 
 
