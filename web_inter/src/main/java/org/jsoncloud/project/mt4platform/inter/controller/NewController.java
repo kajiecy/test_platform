@@ -113,6 +113,48 @@ public class NewController extends BaseController{
         pageInfo.setTotalCount(totalCount);
         return ResponseMap.success("success").data("pageInfo",pageInfo).data("list",resultList).result();
     }
+    @RequestMapping(value = "/getNewsOutList4App.json", method = RequestMethod.POST)
+    public Map getNewsOutList4App(HttpServletRequest request) {
+        RequestBodyJSON data = new RequestBodyJSON(request);
+        int currentPage = data.getIntDef("currentPage", 1);
+        int pageSize = data.getIntDef("pageSize", 10);
+        String news_source = data.getStringNull("news_source");
+
+        Map<String,Object> condition = getCondition();
+        condition.put("startIndex",(currentPage-1)*pageSize);
+        condition.put("pageSize",pageSize+1);
+        condition.put("news_source",news_source);
+//        int totalCount = this.mybatisDao.selectOne(Integer.class,"NewsMapper.selectNewsOutListCount", condition);
+        List<Map<String, Object>> resultList = new ArrayList<>();
+        resultList = this.mybatisDao.selectMapList("NewsMapper.selectNewsOutList", condition);
+        boolean hasNext = false;
+        if(resultList.size()>pageSize){
+            hasNext = true;
+            resultList.remove(resultList.size()-1);
+        }
+        return ResponseMap.success("success").data("hasNext",hasNext).data("list",resultList).result();
+    }
+
+    @RequestMapping(value = "/getNewsInnerList4App.json", method = RequestMethod.POST)
+    public Map getNewsInnerList4App(HttpServletRequest request) {
+        RequestBodyJSON data = new RequestBodyJSON(request);
+        int currentPage = data.getIntDef("currentPage", 1);
+        int pageSize = data.getIntDef("pageSize", 10);
+
+        Map<String,Object> condition = getCondition();
+        condition.put("startIndex",(currentPage-1)*pageSize);
+        condition.put("pageSize",pageSize+1);
+//        int totalCount = this.mybatisDao.selectOne(Integer.class,"NewsMapper.selectNewsOutListCount", condition);
+        List<Map<String, Object>> resultList = new ArrayList<>();
+        resultList = this.mybatisDao.selectMapList("NewsMapper.selectNewsList", condition);
+        boolean hasNext = false;
+        if(resultList.size()>pageSize){
+            hasNext = true;
+            resultList.remove(resultList.size()-1);
+        }
+        return ResponseMap.success("success").data("hasNext",hasNext).data("list",resultList).result();
+    }
+
 
     //用户点赞接口
     @RequestMapping(value = "/addPraise.json", method = RequestMethod.POST)

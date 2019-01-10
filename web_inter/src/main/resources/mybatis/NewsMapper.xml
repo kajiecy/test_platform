@@ -52,7 +52,7 @@
 
   <select id="selectNewsOutList"  parameterType="map" resultType="map" >
     SELECT * FROM tbl_news_out WHERE 1 = 1
-    <if test="id!=null">
+    <if test="news_source!=null">
       AND news_source = #{news_source}
     </if>
     ORDER BY create_time DESC

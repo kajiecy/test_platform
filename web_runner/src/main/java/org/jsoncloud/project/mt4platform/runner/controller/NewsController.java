@@ -84,6 +84,7 @@ public class NewsController  extends BaseController {
     //请求金十数据的快讯
     private void getJinShiNews(){
         String result = sendGet(jinshiUrl,null);
+        result = result.replaceAll("金十","MT4");
         JSONObject jsonObj = (JSONObject)JSON.parse(result);
         JSONArray infos = jsonObj.getJSONArray("infos");
         List<String[]> jinShiDataList = new ArrayList<>();
@@ -123,19 +124,20 @@ public class NewsController  extends BaseController {
              * 先根据ID查询是否存在此条id的信息
              * 如果 没有 插入此条记录
              */
-            Map<String,Object> condition = getCondition();
-            condition.put("news_id",string11);
-            List<Map<String, Object>> resultList = this.mybatisDao.selectMapList("NewsMapper.getNewsById", condition);
-            if(!(resultList!=null&&resultList.size()>0)){
-                //向数据库中添加一条记录
-                Map<String,Object> insertSource = getCondition();
-                insertSource.put("news_id",string11);
-                insertSource.put("news_source","jinshi");
-                insertSource.put("jinshi_content",infos.getString(i));
-                insertSource.put("create_time",new Date());
-                this.mybatisDao.insert("NewsMapper.addNewsOut",insertSource);
+            if("0".equals(string0)&&!"<a".equals(string3.substring(0,2))){
+                Map<String,Object> condition = getCondition();
+                condition.put("news_id",string11);
+                List<Map<String, Object>> resultList = this.mybatisDao.selectMapList("NewsMapper.getNewsById", condition);
+                if(!(resultList!=null&&resultList.size()>0)){
+                    //向数据库中添加一条记录
+                    Map<String,Object> insertSource = getCondition();
+                    insertSource.put("news_id",string11);
+                    insertSource.put("news_source","jinshi");
+                    insertSource.put("jinshi_content",infos.getString(i));
+                    insertSource.put("create_time",new Date());
+                    this.mybatisDao.insert("NewsMapper.addNewsOut",insertSource);
+                }
             }
-
         }
 //        System.out.println(jinShiDataList);
     }
