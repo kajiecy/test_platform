@@ -72,7 +72,11 @@ public class NewsController  extends BaseController {
                 insertSource.put("news_id",id);
                 insertSource.put("news_source","huaerjie");
                 insertSource.put("article",article);
-                insertSource.put("content",content);
+                if(content.indexOf("了解更多，点击查看")!=-1){
+                    insertSource.put("content",content.substring(0,content.indexOf("了解更多，点击查看")));
+                }else {
+                    insertSource.put("content",content);
+                }
                 insertSource.put("image_uris",image_uris);
                 insertSource.put("score",score);
                 insertSource.put("create_time",new Date());

@@ -41,7 +41,14 @@
       LIMIT 0,5
     </if>
   </select>
+  <!--UPDATE tbl_news SET read_count = read_count + 1 WHERE id = 14;-->
 
+  <update id="upInnerNewsReadCount" parameterType="map">
+    UPDATE
+    tbl_news
+    SET read_count = read_count + 1
+    WHERE id = #{id}
+  </update>
 
   <select id="selectNewsOutListCount"  parameterType="map" resultType="int" >
     SELECT COUNT(1) FROM tbl_news_out WHERE 1 = 1

@@ -140,11 +140,17 @@ public class NewController extends BaseController{
         RequestBodyJSON data = new RequestBodyJSON(request);
         int currentPage = data.getIntDef("currentPage", 1);
         int pageSize = data.getIntDef("pageSize", 10);
+        Integer id = data.getIntNull("id");
 
         Map<String,Object> condition = getCondition();
         condition.put("startIndex",(currentPage-1)*pageSize);
         condition.put("pageSize",pageSize+1);
-//        int totalCount = this.mybatisDao.selectOne(Integer.class,"NewsMapper.selectNewsOutListCount", condition);
+        condition.put("id",id);
+        //每次根据id 获取的新闻内容 为其阅读量字段+1
+        if(id!=null){
+            this.mybatisDao.update("NewsMapper.upInnerNewsReadCount", condition);
+        }
+        //int totalCount = this.mybatisDao.selectOne(Integer.class,"NewsMapper.selectNewsOutListCount", condition);
         List<Map<String, Object>> resultList = new ArrayList<>();
         resultList = this.mybatisDao.selectMapList("NewsMapper.selectNewsList", condition);
         boolean hasNext = false;

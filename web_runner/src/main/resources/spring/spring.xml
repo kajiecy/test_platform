@@ -87,38 +87,38 @@
 
     <bean class="org.jsoncloud.project.mt4platform.runner.controller.MainController" id="mainController"
           init-method="init"/>
-    <!--<task:scheduled-tasks>-->
+    <task:scheduled-tasks>
         <!--<task:scheduled ref="mainController" method="orderTask" cron="0/1 * *  * * ? "/>-->
         <!--<task:scheduled ref="mainController" method="createOrderTask" cron="0/1 * *  * * ? "/>-->
         <!--<task:scheduled ref="mainController" method="closePositionTask" cron="0/1 * *  * * ? "/>-->
 
-        <!--<task:scheduled ref="mainController" method="readSymbolInfo" cron="0 0/10 * * * ?"/>-->
+        <task:scheduled ref="mainController" method="readSymbolInfo" cron="0 0/10 * * * ?"/>
         <!--<task:scheduled ref="mainController" method="readSymbolInfo" cron="0/5 * * * * ?"/>-->
         <!--计算库存费不要-->
         <!--<task:scheduled ref="mainController" method="updateStorage" cron="0 0 6 * * ?"/>-->
         <!--<task:scheduled ref="mainController" method="updateStorage" cron="0/5 * *  * * ? "/>-->
-    <!--</task:scheduled-tasks>-->
+    </task:scheduled-tasks>
 
 
     <bean class="org.jsoncloud.project.mt4platform.runner.controller.GetSymbolController" id="getSymbolController"
           init-method="init"/>
-    <!--<task:scheduled-tasks>-->
-        <!--<task:scheduled ref="getSymbolController" method="symbolsTask" cron="0/1 * *  * * ? "/>-->
-    <!--</task:scheduled-tasks>-->
+    <task:scheduled-tasks>
+        <task:scheduled ref="getSymbolController" method="symbolsTask" cron="0/1 * *  * * ? "/>
+    </task:scheduled-tasks>
 
     <bean class="org.jsoncloud.project.mt4platform.runner.controller.AmendSymbolController" id="amendSymbolController"
           init-method="init"/>
     <!--修正报价的最高最和最低值-->
-    <!--<task:scheduled-tasks>-->
-        <!--<task:scheduled ref="amendSymbolController" method="amendSymbol" cron="0 0/10 * * * ?"/>-->
-    <!--</task:scheduled-tasks>-->
+    <task:scheduled-tasks>
+        <task:scheduled ref="amendSymbolController" method="amendSymbol" cron="0 0/10 * * * ?"/>
+    </task:scheduled-tasks>
 
 
     <!--每一分钟获取一次新闻-->
     <bean class="org.jsoncloud.project.mt4platform.runner.controller.NewsController" id="newsController"
           init-method="init"/>
     <task:scheduled-tasks>
-        <task:scheduled ref="newsController" method="getJinShiMessage" cron="0/10 * * * * ?"/>
+        <task:scheduled ref="newsController" method="getJinShiMessage" cron="0/5 * * * * ?"/>
     </task:scheduled-tasks>
 
 
