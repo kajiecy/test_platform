@@ -8,12 +8,14 @@ var  page = {
     "maxshowpageitem":5,//最多显示的页码个数
     "pagelistcount":10,//每一页显示的内容条数
     "options":null,
-    "init":function(listCount,currentPage,options){
+    "online":"",
+    "init":function(listCount,currentPage,options,online){
     	this.data=options.data,
     	this.pageId=options.id,
         this.options = options,
         this.maxshowpageitem=options.maxshowpageitem,//最多显示的页码个数
         this.pagelistcount=options.pagelistcount//每一页显示的内容条数
+    	this.online = online;
         page.initPage(listCount,currentPage);
     },
   /**
@@ -62,8 +64,42 @@ var  page = {
         currentPage = parseInt(currentPage);
         page.initWithUl(listCount,currentPage);
         page.initPageEvent(listCount);
-        page.viewPage(currentPage,listCount,page.pagelistcount,page.data)
+        if(this.online){
+            page.viewPageOl(currentPage,page.pagelistcount,this.online)
+        }else {
+            page.viewPage(currentPage,listCount,page.pagelistcount,page.data)
+        }
 //      fun(currentPage);
+    },
+    "viewPageOl":function (currentPage,pagelistcount,online){
+        var data = {};
+        var token = window.sessionStorage.token;
+        if (token != undefined && token != "") {
+            data.login_token = token
+        }
+        data.param = $("#search-param").val();
+        data.currentPage = currentPage;
+        data.pageSize = $("#select-div").find('option:selected').val();
+
+        var this_ = this;
+        $.ajax({
+            type: "POST",
+            url: "mvc/news/listPage",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(data),
+            success: function (result) {
+                if (result.code == 0) {
+                    var newsList = result.data.list;
+                    datas = newsList;
+                    this_.options.callBack(result.data.list);
+                } else if (result.code == 2000) {
+                    alert(result.message);
+                    window.location.href = "login.html";
+                }
+            }
+        });
+
     },
     //页面显示功能
      "viewPage":function (currentPage,listCount,pagelistcount,data){

@@ -1,5 +1,6 @@
 package org.jsoncloud.project.mt4platform.backstage.controller;
 
+import com.kajie88.util.page.PageInfo;
 import org.apache.commons.lang.StringUtils;
 import org.jsoncloud.framework.web.controller.BaseController;
 import org.jsoncloud.framework.web.request.RequestBodyJSON;
@@ -141,5 +142,27 @@ public class NewsPushController extends BaseController{
         String param = data.getString("param", false, null);
         List<Map<String, Object>> list = this.newsCore.list(param);
         return ResponseMap.success("success").data("list", list).result();
+    }
+
+    @RequestMapping(value = "/listPage", method = RequestMethod.POST)
+    public Map listPage(HttpServletRequest request){
+        RequestBodyJSON data = new RequestBodyJSON(request);
+        String param = data.getString("param", false, null);
+
+        int currentPage = data.getIntDef("currentPage", 1);
+        int pageSize = data.getIntDef("pageSize", 10);
+
+        Map<String,Object> condition = getCondition();
+        condition.put("startIndex",(currentPage-1)*pageSize);
+        condition.put("pageSize",pageSize);
+        condition.put("param",param);
+
+        List<Map<String, Object>> list = this.newsCore.listPage(condition);
+
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setCurrentPage(currentPage);
+        pageInfo.setPageSize(pageSize);
+        pageInfo.setTotalCount((Integer) condition.get("total"));
+        return ResponseMap.success("success").data("pageInfo",pageInfo).data("list",list).result();
     }
 }

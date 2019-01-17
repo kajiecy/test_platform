@@ -12,6 +12,7 @@
     ORDER BY create_time DESC
   </select>
 
+
   <select id="selectNewsListCount"  parameterType="map" resultType="int" >
     SELECT COUNT(1) FROM tbl_news WHERE 1 = 1
     <if test="id!=null">

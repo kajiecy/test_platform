@@ -27,7 +27,7 @@
         </div>
         <div class="col-lg-12">
             <div class="content-panel">
-                <h4><i class="fa fa-angle-right"></i> 新闻列表</h4>
+                <h4><i class="fa fa-angle-right"></i> 新闻列表222</h4>
                 <section id="unseen">
                     <table class="table table-bordered table-striped table-condensed">
                         <thead>
@@ -54,7 +54,7 @@
         </div><!-- /col-lg-4 -->
     </div><!-- /row -->
 </section>
-<! --/wrapper -->
+<!-- /wrapper -->
 <div>
     <div style="float: left;width: 10%;margin: 5px;" class="input-group input-group-sm">
         <span class="input-group-addon" id="basic-addon3">跳转到</span>
@@ -87,6 +87,7 @@
 </body>
 </html>
 <script type="text/javascript">
+
 
     function formatStr(v) {
         if (v) {
@@ -152,11 +153,13 @@
         }
 
         data.param = $("#search-param").val();
+        data.currentPage = currentPage;
+        data.pageSize = $("#select-div").find('option:selected').val();
         // 获取用户列表
         // console.log(JSON.stringify(data));
         $.ajax({
             type: "POST",
-            url: "mvc/news/list",
+            url: "mvc/news/listPage",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             data: JSON.stringify(data),
@@ -165,7 +168,7 @@
                     var newsList = result.data.list;
                     datas = newsList;
                     console.log(datas)
-                    $("#totalCount").val(newsList.length)
+                    $("#totalCount").val(result.data.pageInfo.totalCount)
                     // 分页操作
                     var options = {
                         "id": "page",//显示页码的元素
@@ -173,7 +176,7 @@
                         "maxshowpageitem": 3,//最多显示的页码个数
                         "pagelistcount": parseInt($("#select-div").find('option:selected').val()),//每页显示数据个数
                         "callBack": function (result) {
-                            console.log(result)
+                            console.log("callBack",result)
                             $("tbody").html("")
                             var tr = "";
                             for (var i = 0; i < result.length; i++) {
@@ -195,7 +198,8 @@
                             })
                         }
                     };
-                    page.init(datas.length, currentPage, options);
+//                    page.init(result.data.pageInfo.totalCount, currentPage, options);
+                    page.init(result.data.pageInfo.totalCount, currentPage, options,'mvc/news/listPage');
                 } else if (result.code == 2000) {
                     alert(result.message);
                     window.location.href = "login.html";
