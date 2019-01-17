@@ -95,4 +95,17 @@ public class NewsCore {
         args.put("total",total);
         return newsMapper;
     }
+
+    public List<Map<String, Object>> getNewsOutList4Page(Map args) {
+
+        List<Map<String, Object>> newsMapper = new ArrayList<>();
+
+        int total = mybatisDao.selectOne(Integer.class,"NewsMapper.selectNewsOutCount",args);
+
+        if(total>0){
+            newsMapper = this.mybatisDao.selectMapList("NewsMapper.selectNewsOutPage", args);
+        }
+        args.put("total",total);
+        return newsMapper;
+    }
 }

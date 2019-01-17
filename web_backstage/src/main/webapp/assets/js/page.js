@@ -15,6 +15,7 @@ var  page = {
         this.options = options,
         this.maxshowpageitem=options.maxshowpageitem,//最多显示的页码个数
         this.pagelistcount=options.pagelistcount//每一页显示的内容条数
+        // console.log("初始化方法开始为online属性赋值旧值为："+this.online+",新值为："+this.online)
     	this.online = online;
         page.initPage(listCount,currentPage);
     },
@@ -84,7 +85,7 @@ var  page = {
         var this_ = this;
         $.ajax({
             type: "POST",
-            url: "mvc/news/listPage",
+            url: this_.online,
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             data: JSON.stringify(data),

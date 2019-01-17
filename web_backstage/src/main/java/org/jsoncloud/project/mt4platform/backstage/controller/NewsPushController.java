@@ -165,4 +165,26 @@ public class NewsPushController extends BaseController{
         pageInfo.setTotalCount((Integer) condition.get("total"));
         return ResponseMap.success("success").data("pageInfo",pageInfo).data("list",list).result();
     }
+
+    @RequestMapping(value = "/getNewsOutPage", method = RequestMethod.POST)
+    public Map getNewsOutPage(HttpServletRequest request){
+        RequestBodyJSON data = new RequestBodyJSON(request);
+        String param = data.getString("param", false, null);
+
+        int currentPage = data.getIntDef("currentPage", 1);
+        int pageSize = data.getIntDef("pageSize", 10);
+
+        Map<String,Object> condition = getCondition();
+        condition.put("startIndex",(currentPage-1)*pageSize);
+        condition.put("pageSize",pageSize);
+        condition.put("param",param);
+
+        List<Map<String, Object>> list = this.newsCore.getNewsOutList4Page(condition);
+
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setCurrentPage(currentPage);
+        pageInfo.setPageSize(pageSize);
+        pageInfo.setTotalCount((Integer) condition.get("total"));
+        return ResponseMap.success("success").data("pageInfo",pageInfo).data("list",list).result();
+    }
 }

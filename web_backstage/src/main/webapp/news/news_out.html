@@ -32,13 +32,11 @@
                     <table class="table table-bordered table-striped table-condensed">
                         <thead>
                         <tr>
-                            <th><input type="checkbox" id="all"></th>
-                            <th>#</th>
-                            <th style="width: 150px">标题</th>
-                            <th style="width: 200px">副标题</th>
-                            <th>作者</th>
-                            <th>create_time</th>
-                            <th>操作</th>
+                            <th style="width: 30px"><input type="checkbox" id="all"></th>
+                            <th style="width: 30px">#</th>
+                            <th style="">内容</th>
+                            <th style="width: 190px">create_time</th>
+                            <th style="width: 60px">操作</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -159,7 +157,7 @@
         // console.log(JSON.stringify(data));
         $.ajax({
             type: "POST",
-            url: "mvc/news/listPage",
+            url: "mvc/news/getNewsOutPage",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             data: JSON.stringify(data),
@@ -180,9 +178,19 @@
                             $("tbody").html("");
                             var tr = "";
                             for (var i = 0; i < result.length; i++) {
-                                tr += "<tr>";
-                                tr += "<tr><th><input type='checkbox' name='choice' value='" + result[i].id + "'></th><th><a class='info-a' href='#' data-id='" + result[i].id + "'>" + (i + 1) + "</th><th style='width: 200px'>" + formatStr(result[i].title) + "</th><th style='width: 200px'>" + formatStr(result[i].sec_title) + "</th><th>" + formatStr(result[i].author) + "</th><th>" + formatStr(result[i].create_time) + "</th><th><a href='#'class='info-a'  data-id='" + result[i].id + "'>编辑</th></tr>"
-                                tr += "</tr>";
+
+                                tr += "<tr>" +
+                                        "<th><input type='checkbox' name='choice' value='" + result[i].id + "'></th>" +
+                                        "<th><a class='info-a' href='#' data-id='" + result[i].id + "'>" + (i + 1) + "</th>" ;
+                                if(result[i].news_source==='jinshi'){
+                                    tr +=   "<th>" + formatStr(result[i].jinshi_content.split("#")[3]) + "</th>";
+                                }else {
+                                    tr +=   "<th>" + formatStr(result[i].content) + "</th>";
+                                }
+                                tr +=   "<th>" + formatStr(result[i].create_time) + "</th>" +
+                                        "<th><a href='#'class='info-a'  data-id='" + result[i].id + "'>编辑</th>" +
+                                    "</tr>";
+
                             }
                             $("tbody").append(tr);
                             $('.info-a').on('click', function () {
@@ -199,7 +207,7 @@
                         }
                     };
 //                  page.init(result.data.pageInfo.totalCount, currentPage, options);
-                    page.init(result.data.pageInfo.totalCount, currentPage, options,'mvc/news/listPage');
+                    page.init(result.data.pageInfo.totalCount, currentPage, options,'mvc/news/getNewsOutPage');
                 } else if (result.code == 2000) {
                     alert(result.message);
                     window.location.href = "login.html";
