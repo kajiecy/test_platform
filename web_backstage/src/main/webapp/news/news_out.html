@@ -182,6 +182,7 @@
                                 tr += "<tr>" +
                                         "<th><input type='checkbox' name='choice' value='" + result[i].id + "'></th>" +
                                         "<th><a class='info-a' href='#' data-id='" + result[i].id + "'>" + (i + 1) + "</th>" ;
+                                //金十数据与 华尔街数据在数据库中的结构不一样 取法分开判断。
                                 if(result[i].news_source==='jinshi'){
                                     tr +=   "<th>" + formatStr(result[i].jinshi_content.split("#")[3]) + "</th>";
                                 }else {
@@ -196,14 +197,14 @@
                             $('.info-a').on('click', function () {
                                 var id = this.dataset.id;
                                 window.sessionStorage.setItem("newsId", id);
-                                $("#main-content").load("news/info.html");
+                                $("#main-content").load("news/news_out_edit.html");
                             })
-                            $('.img_change').on('click', function () {
-                                var id = this.getAttribute("news_id");
-                                var img_src = this.getAttribute("img_src");
-//                              window.sessionStorage.setItem("newsId", id);
-//                              $("#main-content").load("news/info.html");
-                            })
+//                            $('.img_change').on('click', function () {
+//                                var id = this.getAttribute("news_id");
+//                                var img_src = this.getAttribute("img_src");
+////                              window.sessionStorage.setItem("newsId", id);
+////                              $("#main-content").load("news/info.html");
+//                            })
                         }
                     };
 //                  page.init(result.data.pageInfo.totalCount, currentPage, options);
