@@ -57,4 +57,17 @@
       LIMIT #{startIndex},#{pageSize}
     </if>
   </select>
+
+
+  <update id="updateOutNewsContent" parameterType="map">
+    UPDATE
+    tbl_news_out
+    <if test="jinshi_content!=null">
+      SET jinshi_content = #{jinshi_content}
+    </if>
+    <if test="jinshi_content==null">
+      SET content = #{content}
+    </if>
+    WHERE id = #{id};
+  </update>
 </mapper>

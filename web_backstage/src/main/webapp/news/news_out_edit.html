@@ -19,64 +19,15 @@
     <div class="row mt">
         <div class="col-lg-12">
             <div class="form-panel">
-                <h4 class="mb"><i class="fa fa-angle-right"></i> 新闻</h4>
+                <h4 class="mb"><i class="fa fa-angle-right"></i>外部新闻</h4>
                 <form class="form-horizontal style-form" method="get">
-                    <div class="form-group" style="display: none">
-                        <label class="col-sm-2 col-sm-2 control-label">用户Id</label>
-                        <div class="col-sm-10">
-                            <input type="text" id="id" class="form-control round-form" disabled>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 col-sm-2 control-label">标题</label>
-                        <div class="col-sm-10">
-                            <input type="text" id="title" class="form-control round-form">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 col-sm-2 control-label">副标题</label>
-                        <div class="col-sm-10">
-                            <!--<input type="text" id="sectitle" class="form-control round-form">-->
-                            <textarea rows="5" id="sectitle" style="width: 90%"></textarea>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 col-sm-2 control-label">标题图片</label>
-                        <div class="col-sm-10">
-                            <!--<input type="text" id="title_img" class="form-control round-form">-->
-                            <div id="upload" style="display: none">上传</div>
-                            <input id="img" name="img_url" hidden/>
-                            <div style="position:relative;display: inline-block;">
-                                <img style="width: 200px;height:140px" id="img_all"/>
-                                <input type="button" id="sys01" onclick="upload_img.upload_btn(this,'img_url')"
-                                       value="选择图片"/>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 col-sm-2 control-label">作者</label>
-                        <div class="col-sm-10">
-                            <input type="text" id="author" class="form-control round-form">
-                        </div>
-                    </div>
                     <div class="form-group">
                         <label class="col-sm-2 col-sm-2 control-label">内容</label>
                         <div class="col-sm-10">
                             <!--<textarea id="content" class="form-control" rows="10"></textarea>-->
+                            <input type="text" id="id" hidden>
                             <div class="content" id="summernote"></div>
                             <!--<div id="summernote" name="detail"></div>-->
-                        </div>
-                    </div>
-                    <div class="form-group time">
-                        <label class="col-sm-2 col-sm-2 control-label">添加日期</label>
-                        <div class="col-sm-10">
-                            <input type="text" id="createTime" class="form-control round-form" disabled>
-                        </div>
-                    </div>
-                    <div class="form-group time">
-                        <label class="col-sm-2 col-sm-2 control-label">修改日期</label>
-                        <div class="col-sm-10">
-                            <input type="text" id="updateTime" class="form-control round-form" disabled>
                         </div>
                     </div>
                     <div style="text-align: center">
@@ -86,9 +37,9 @@
                         <button type="button" class="btn btn-danger btn-sm btn-block"
                                 style="display: -webkit-inline-box;width: 15%;" id="save-btn">提交
                         </button>
-                        <button type="button" class="btn btn-danger btn-sm"
-                                style="display: -webkit-inline-box;width: 15%;" id="delete-btn">删除
-                        </button>
+                        <!--<button type="button" class="btn btn-danger btn-sm"-->
+                                <!--style="display: -webkit-inline-box;width: 15%;" id="delete-btn">删除-->
+                        <!--</button>-->
                         <button type="button" class="btn btn-success btn-sm btn-block"
                                 style="display: -webkit-inline-box;width: 15%;margin-top: 5px" id="back-btn">返回
                         </button>
@@ -153,24 +104,21 @@
             // 获取新闻详细信息
             $.ajax({
                 type: "POST",
-                url: "mvc/news/info",
+                url: "mvc/news/getNewsOutPage",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 data: JSON.stringify(data),
                 success: function (result) {
                     if (result.code == 0) {
-                        var news = result.data.info;
+                        var news = result.data.list[0];
                         console.log(news)
                         $("#id").val(news.id);
-                        $("#title").val(news.title);
-                        $("#author").val(news.author);
-                        $("#sectitle").val(news.secTitle);
-                        $("#img_all").attr("src", news.titleImg);
-                        $("#img").val(news.titleImg);
-//                        $("#content").val(news.content);
-                        div.summernote('code', news.content);
-                        $("#createTime").val(news.createTime);
-                        $("#updateTime").val(news.updateTime);
+
+                        if(news.news_source==='jinshi'){
+                            div.summernote('code', news.jinshi_content.split('#')[3]);
+                        }else {
+                            div.summernote('code', news.content);
+                        }
 
                     } else if (result.code == 2000) {
                         alert(result.message);
@@ -240,23 +188,19 @@
             return;
         }
         news.id = $("#id").val();
-        news.title = $("#title").val();
-        news.author = $("#author").val();
-        news.secTitle = $("#sectitle").val();
-        news.titleImg = $("#img").val();
         news.content = div.summernote('code');
         console.log(news)
 
         $.ajax({
             type: "POST",
-            url: "mvc/news/update",
+            url: "mvc/news/changeOutNewsInfo",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             data: JSON.stringify(news),
             success: function (result) {
                 if (result.code == 0) {
                     alert("成功")
-                    $("#main-content").load("news/table.html");
+                    $("#main-content").load("news/news_out.html");
                 } else if (result.code == 2000) {
                     alert(result.message);
                     window.location.href = "login.html";

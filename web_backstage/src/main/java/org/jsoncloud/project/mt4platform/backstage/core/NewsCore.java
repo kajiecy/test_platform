@@ -1,7 +1,9 @@
 package org.jsoncloud.project.mt4platform.backstage.core;
 
 import org.apache.commons.lang.StringUtils;
+import org.jsoncloud.framework.exception.ErrorEnum;
 import org.jsoncloud.framework.mybatis.MybatisDao;
+import org.jsoncloud.framework.web.response.ResponseMap;
 import org.jsoncloud.project.mt4platform.dao.NewsMapper;
 import org.jsoncloud.project.mt4platform.po.News;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,5 +109,33 @@ public class NewsCore {
         }
         args.put("total",total);
         return newsMapper;
+    }
+
+
+    public Map<String, Object> updateOutNews(Map<String, Object> args) {
+        //先去数据库查询外部新闻来源
+
+        Map<String,Object> condition = new HashMap<>();
+        condition.put("startIndex",0);
+        condition.put("pageSize",1);
+        condition.put("id",args.get("id"));
+
+        List<Map<String, Object>> list = this.getNewsOutList4Page(condition);
+        if(list.isEmpty()){
+            return ResponseMap.error(ErrorEnum.INVALID_LOST.getCode(), "该账号不存在").result();
+        }
+        Map<String,Object> newsInfo = list.get(0);
+        String news_source = (String)newsInfo.get("news_source");
+        if("jinshi".equals(news_source)){
+            String jinshiContent = (String)newsInfo.get("jinshi_content");
+            String[] split = jinshiContent.split("#");
+            split[3] = (String)args.get("content");
+            jinshiContent =  StringUtils.join(split, "#");
+            condition.put("jinshi_content",jinshiContent);
+        }else {
+            condition.put("content",args.get("content"));
+        }
+        this.mybatisDao.selectMapList("NewsMapper.updateOutNewsContent", condition);
+        return ResponseMap.success("success").result();
     }
 }

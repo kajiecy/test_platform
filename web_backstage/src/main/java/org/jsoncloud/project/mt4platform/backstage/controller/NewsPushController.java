@@ -170,6 +170,7 @@ public class NewsPushController extends BaseController{
     public Map getNewsOutPage(HttpServletRequest request){
         RequestBodyJSON data = new RequestBodyJSON(request);
         String param = data.getString("param", false, null);
+        String id = data.getString("id", false, null);
 
         int currentPage = data.getIntDef("currentPage", 1);
         int pageSize = data.getIntDef("pageSize", 10);
@@ -178,6 +179,7 @@ public class NewsPushController extends BaseController{
         condition.put("startIndex",(currentPage-1)*pageSize);
         condition.put("pageSize",pageSize);
         condition.put("param",param);
+        condition.put("id",id);
 
         List<Map<String, Object>> list = this.newsCore.getNewsOutList4Page(condition);
 
@@ -187,4 +189,18 @@ public class NewsPushController extends BaseController{
         pageInfo.setTotalCount((Integer) condition.get("total"));
         return ResponseMap.success("success").data("pageInfo",pageInfo).data("list",list).result();
     }
+
+    @RequestMapping(value = "/changeOutNewsInfo", method = RequestMethod.POST)
+    public Map getOutNewsInfo(HttpServletRequest request){
+        RequestBodyJSON data = new RequestBodyJSON(request);
+        Integer id = data.getIntMust("id", "缺失Id");
+        String content = data.getStringMust("content", "内容不能为空");
+
+        Map<String,Object> condition = getCondition();
+        condition.put("id",id);
+        condition.put("content",content);
+
+        return this.newsCore.updateOutNews(condition);
+    }
+
 }
