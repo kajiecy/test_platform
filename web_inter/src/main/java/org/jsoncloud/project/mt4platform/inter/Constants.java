@@ -15,7 +15,7 @@ public class Constants extends org.jsoncloud.framework.constant.Constants {
 
     public static final String PARAM_LOGIN_GROUP = "login_group";
 
-    public static final String APPLICATION_TYPE = "application_type";
+    public static final String APPLICATION_TYPE = "application_type"; //"USAStock"/"MT4";
 
     /**
      * 当前请求的标志token，主要作用类似session，使用该标记存储一些分步骤的请求，这里主要是为了验证码

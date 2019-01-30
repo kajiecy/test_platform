@@ -165,11 +165,37 @@ public class OrderCore {
 //    private double price;
 //    private double stoploss;
 //    private double takeprofit;
-    public int addOrder4Our(Integer login_id,String symbol,Integer command,BigDecimal volumn,BigDecimal sl,BigDecimal tp,BigDecimal price,MTMServiceSoap_PortType mtmServiceSoap_portType,ManagerInfo managerInfo) {
+public int addOrder4Our(Integer login_id,String symbol,Integer command,BigDecimal volumn,BigDecimal sl,BigDecimal tp,BigDecimal price,MTMServiceSoap_PortType mtmServiceSoap_portType,ManagerInfo managerInfo) {
+    TradeTransInfo order = new TradeTransInfo();
+    order.setAccount(login_id);
+    order.setCommand(command);
+    order.setComment("");
+    order.setVolume(volumn.intValue());
+    order.setSymbol(symbol);
+    //如果是买或者卖price赋值为0
+    if(command==0||command==1){
+        order.setPrice(0);
+    }else {
+        order.setPrice(price.doubleValue());
+    }
+    order.setStoploss(sl.doubleValue());
+    order.setTakeprofit(tp.doubleValue());
+    try {
+        TradeRecordInfoHolder addNewTradeRecordResult = new TradeRecordInfoHolder();
+        IntHolder intHolder = new IntHolder();
+        mtmServiceSoap_portType.addNewTradeRecord(order,managerInfo,addNewTradeRecordResult,intHolder);
+        return addNewTradeRecordResult.value.getOrder();
+    }catch(RemoteException e){
+        e.printStackTrace();
+        return -1;
+    }
+}
+    public int addOrder4Our(Integer login_id,String symbol,Integer command,BigDecimal volumn,BigDecimal sl,BigDecimal tp,BigDecimal price,MTMServiceSoap_PortType mtmServiceSoap_portType,ManagerInfo managerInfo,String comment) {
+        //fixme 老外接口返回null
         TradeTransInfo order = new TradeTransInfo();
         order.setAccount(login_id);
         order.setCommand(command);
-        order.setComment("");
+        order.setComment(comment);
         order.setVolume(volumn.intValue());
         order.setSymbol(symbol);
         //如果是买或者卖price赋值为0

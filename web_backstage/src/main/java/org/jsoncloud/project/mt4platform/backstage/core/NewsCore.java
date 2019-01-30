@@ -119,7 +119,6 @@ public class NewsCore {
         condition.put("startIndex",0);
         condition.put("pageSize",1);
         condition.put("id",args.get("id"));
-
         List<Map<String, Object>> list = this.getNewsOutList4Page(condition);
         if(list.isEmpty()){
             return ResponseMap.error(ErrorEnum.INVALID_LOST.getCode(), "该账号不存在").result();

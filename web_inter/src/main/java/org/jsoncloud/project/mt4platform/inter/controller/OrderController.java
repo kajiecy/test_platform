@@ -474,6 +474,10 @@ public class OrderController extends BaseController {
         Map<String, Object> redisUser = (Map<String, Object>) request.getAttribute(Constants.TOKEN_LOGIN_USER);
         Integer login_id = (Integer) redisUser.get("id");
         Integer server_type = (Integer) redisUser.get(Constants.PARAM_LOGIN_KIND);
+        String applicationType = (String) redisUser.get(Constants.APPLICATION_TYPE);
+
+        System.out.println(applicationType);
+
 
         RequestData data = new RequestBodyJSON(request);
         String symbol = data.getStringMust("symbol", "交易品种不能为null");
@@ -568,9 +572,9 @@ public class OrderController extends BaseController {
             //执行添加订单的方法
             order_id = orderCore.addOrder4Local(login_id,symbol,digits,command, volumn, sl, tp, price, BigDecimal.ZERO, null);
         } else if (server_type == LoginTypeEnum.DEMO_SERVER.getValue()) {
-            order_id = orderCore.addOrder4Our(login_id,symbol,command, volumn.multiply(new BigDecimal(100)), sl, tp, price, mtmServiceSoap_portType,managerInfo_demo);
+            order_id = orderCore.addOrder4Our(login_id,symbol,command, volumn.multiply(new BigDecimal(100)), sl, tp, price, mtmServiceSoap_portType,managerInfo_demo,applicationType);
         } else if (server_type == LoginTypeEnum.REAL_SERVER.getValue()) {
-            order_id = orderCore.addOrder4Our(login_id,symbol,command, volumn.multiply(new BigDecimal(100)), sl, tp, price, mtmServiceSoap_portType,managerInfo_real);
+            order_id = orderCore.addOrder4Our(login_id,symbol,command, volumn.multiply(new BigDecimal(100)), sl, tp, price, mtmServiceSoap_portType,managerInfo_real,applicationType);
         }
         if(order_id==-1){
             return ResponseMap.error("订单有误无法交易").result();
