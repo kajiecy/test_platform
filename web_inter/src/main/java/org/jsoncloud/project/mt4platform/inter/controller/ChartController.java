@@ -3,6 +3,7 @@ package org.jsoncloud.project.mt4platform.inter.controller;
 import com.alibaba.fastjson.JSON;
 import org.jsoncloud.framework.redis.RedisDao;
 import org.jsoncloud.framework.sms.PropertiesUtil;
+import org.jsoncloud.framework.util.DateUtil;
 import org.jsoncloud.framework.web.request.RequestBodyJSON;
 import org.jsoncloud.framework.web.request.RequestData;
 import org.jsoncloud.framework.web.response.ResponseMap;
@@ -38,13 +39,16 @@ public class ChartController extends BaseController {
         Integer timeStep = data.getIntMust("timestep", "不能缺少timeStep");
         Integer count = data.getIntMust("count", "不能缺少timeStep");
         String symbol = data.getStringMust("symbol", "不能缺少symbol");
+        Long startTime = data.getLongNull("startTime");
+
+
         if(symbol.indexOf("%23")!=-1){
             symbol = symbol.replace("%23","#");
         }
         MTMServiceLocator mtmServiceLocator = new MTMServiceLocator();
         MTMServiceSoap_PortType mtmServiceSoap_portType = mtmServiceLocator.getMTMServiceSoap12();
         Date nowtime = new Date();
-        Long nowtime_count = nowtime.getTime();
+        Long nowtime_count = startTime==null?nowtime.getTime():startTime;
         nowtime_count = nowtime_count / 1000;
         //生成时间区间
         Long passtime_count = nowtime_count - ((long) timeStep * 60) * count;
@@ -86,6 +90,7 @@ public class ChartController extends BaseController {
             arg.put("close", divide.multiply(BigDecimal.valueOf(open + close)).setScale(digits, BigDecimal.ROUND_HALF_UP));
             arg.put("high", divide.multiply(BigDecimal.valueOf(open + high)).setScale(digits, BigDecimal.ROUND_HALF_UP));
             arg.put("low", divide.multiply(BigDecimal.valueOf(open + low)).setScale(digits, BigDecimal.ROUND_HALF_UP));
+            arg.put("timeFormat", DateUtil.date2String(new Date(Long.valueOf(info.getCtm()+"000"))));
             args.add(arg);
         }
 

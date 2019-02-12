@@ -75,6 +75,8 @@ public class NewsController  extends BaseController {
                 if(content.indexOf("了解更多，点击查看")!=-1){
                     insertSource.put("content",content.substring(0,content.indexOf("了解更多，点击查看")));
                 }else {
+                    //去除所有的<a>标签
+                    content=content.replaceAll("<a[^>]*>[^>]*</a>", "");
                     insertSource.put("content",content);
                 }
                 insertSource.put("image_uris",image_uris);
