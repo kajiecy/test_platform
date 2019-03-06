@@ -119,7 +119,7 @@ public class SymbolController extends BaseController {
         //由于业务修改此时组名已经不再是组名 需要通过 tbl_symbol_group表查询组名
         Map<String,Object> groupcondition = getCondition();
         if("USAStock".equals(applicationType)){
-            groupcondition.put("groupname","USAStock");
+            groupcondition.put("groupname","allsymbols");
         }else {
             groupcondition.put("groupname",group_name);
         }

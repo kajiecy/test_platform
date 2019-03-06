@@ -323,7 +323,11 @@ public class CommonController extends BaseController {
         UserRecordCS userRecordCS = new UserRecordCS();
 
         userRecordCS.setLogin(0);
-        userRecordCS.setGroup("demoadvanced");
+        if("美股APP".equals(isStock)){
+            userRecordCS.setGroup("allsymbols");
+        }else {
+            userRecordCS.setGroup("demoadvanced");
+        }
         userRecordCS.setPassword(pwd);
         userRecordCS.setEnable(1);
         userRecordCS.setEnable_change_password(1);
@@ -382,7 +386,11 @@ public class CommonController extends BaseController {
         login.setId(userRecordCS.getLogin());
         login.setName(name);
         login.setPwd(pwd);
-        login.setGroupName(PropertiesUtil.get("default_group"));
+        if("美股APP".equals(isStock)){
+            login.setGroupName("allsymbols");
+        }else {
+            login.setGroupName(PropertiesUtil.get("default_group"));
+        }
         login.setRegdate(new Date());
         login.setBalance(new BigDecimal(money.toString()));
         loginMapper.insertSelective(login);
