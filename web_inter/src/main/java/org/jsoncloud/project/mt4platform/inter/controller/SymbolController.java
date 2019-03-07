@@ -40,9 +40,14 @@ public class SymbolController extends BaseController {
         Map<String, Object> redisUser = (Map<String, Object>) request.getAttribute(Constants.TOKEN_LOGIN_USER);
         Integer login_id = (Integer) redisUser.get("id");
         Integer server_type = (Integer) redisUser.get(Constants.PARAM_LOGIN_KIND);
+
+        String applicationType = (String) redisUser.get(Constants.APPLICATION_TYPE);
+
         Map<String,Object> condition = getCondition();
         condition.put("login_id",login_id);
         condition.put("type",server_type);
+        condition.put("applicationType",applicationType);
+
         List<Map<String,Object>> useSymbol = mybatisDao.selectMapList("SymbolMapper.getUseSymbol",condition);
         List<Map<String, Object>> infolist = new ArrayList<>();
         String jsonString = this.redisDao.getValue("symbolsmap");

@@ -15,7 +15,14 @@
         )  AND group_name = #{group_name}
     </select>
     <select id="getUseSymbol" parameterType="map" resultType="map">
-      SELECT DISTINCT s.* from tbl_use_symbol us ,tbl_symbol s WHERE us.symbol = s.symbol and us.login_id = #{login_id} AND us.service_type = #{type}
+      SELECT DISTINCT s.* from tbl_use_symbol us ,tbl_symbol s
+      WHERE
+      us.symbol = s.symbol
+      and us.login_id = #{login_id}
+      AND us.service_type = #{type}
+      <if test="applicationType!=null">
+          AND us.application_type = #{applicationType}
+      </if>
     </select>
     <select id="getUseSymbolWithStock" parameterType="map" resultType="map">
         SELECT DISTINCT s.* from tbl_use_symbol us ,tbl_symbol s WHERE us.symbol = s.symbol and us.login_id = #{login_id} AND us.service_type = #{type} AND us.application_type = #{application_type}

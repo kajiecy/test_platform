@@ -214,7 +214,7 @@ public class CommonController extends BaseController {
 //        https://graph.qq.com/user/get_user_info?
 //        access_token=*************&
 //        oauth_consumer_key=1106349754&
-//                openid=****************&
+//        openid=****************&
 //        format=json
 
 
