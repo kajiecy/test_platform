@@ -66,6 +66,7 @@ public class SymbolController extends BaseController {
                 Double bid = Double.parseDouble((String) map.get("bid"));
                 Double ji = Math.pow(10,digits);
                 map.put("diancha",new BigDecimal(ask*ji-bid*ji).setScale(0,BigDecimal.ROUND_HALF_DOWN).toString());
+                map.put("symbol_type",symbol.get("symbol_type"));
                 infolist.add(map);
             }
         }

@@ -432,7 +432,11 @@ public class CommonController extends BaseController {
 
         //
         //为美股国添加默认的交易品种
-        String[] symbolsStock = new String[]{"CAT","BAC","CVX"};
+        String[] symbolsStock = new String[]{
+                "US500v","USTECv","JP225v","UK100v","USDindexv"
+                ,"HK50v","DE30v","US30v",".CAT.N",".BAC.N"
+                ,".CVX.N",".SLW.N",".JPM.N",".MA.N",".IBM.N"
+        };
         for(String symbol_m:symbolsStock){
             Map<String,Object> condition1 = getCondition();
             condition1.put("login_id",login.getId());
