@@ -496,9 +496,8 @@ public class OrderController extends BaseController {
         BigDecimal price = null;
         Map<String,Object> symbolcondition = getCondition();
         symbolcondition.put("symbol",symbol);
-        Map<String,Object> symbolinfo= mybatisDao.selectMapOne("SymbolMapper.selectFinalValueBySymbol",symbolcondition);
-
-
+        List<Map<String, Object>> maps = mybatisDao.selectMapList("SymbolMapper.selectFinalValueBySymbol", symbolcondition);
+        Map<String,Object> symbolinfo= maps.size()>0?maps.get(0):new HashMap<String, Object>();
         if(command!=0&&command!=1){
             price = new BigDecimal(data.getStringMust("price","price不能为0"));
         }

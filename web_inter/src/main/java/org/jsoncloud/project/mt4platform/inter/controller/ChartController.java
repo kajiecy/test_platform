@@ -108,7 +108,8 @@ public class ChartController extends BaseController {
         if(map==null){
             return ResponseMap.error("error").result();
         }
-        Map<String,Object> symbol = mybatisDao.selectMapOne("SymbolMapper.selectFinalValueBySymbol",map);
+        List<Map<String, Object>> maps = mybatisDao.selectMapList("SymbolMapper.selectFinalValueBySymbol", map);
+        Map<String,Object> symbol = maps.size()>0?maps.get(0):new HashMap<String, Object>();
         map.put("symboldesc",symbol.get("symbol_desc"));
 
         return ResponseMap.success("success").data("info", map).result();

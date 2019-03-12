@@ -305,8 +305,6 @@ public class CommonController extends BaseController {
         if (!redisSmsCodeManager.compareCode(code_token, code, phone, SmsCodeTypeEnum.REGISTER.getType())){
             return ResponseMap.error(ErrorEnum.INVALID_LOST.getCode(), "验证码错误").result();
         }
-
-
         //添加注册的用户
 //        向测试服务器发送请求 创建账户 创建好账户后记录下账户信息 放到login表中
 
@@ -324,7 +322,8 @@ public class CommonController extends BaseController {
 
         userRecordCS.setLogin(0);
         if("美股APP".equals(isStock)){
-            userRecordCS.setGroup("allsymbols");
+//            userRecordCS.setGroup("allsymbols");
+            userRecordCS.setGroup("demoadvanced");
         }else {
             userRecordCS.setGroup("demoadvanced");
         }
@@ -387,7 +386,8 @@ public class CommonController extends BaseController {
         login.setName(name);
         login.setPwd(pwd);
         if("美股APP".equals(isStock)){
-            login.setGroupName("allsymbols");
+//            login.setGroupName("allsymbols");
+            login.setGroupName(PropertiesUtil.get("default_group"));
         }else {
             login.setGroupName(PropertiesUtil.get("default_group"));
         }

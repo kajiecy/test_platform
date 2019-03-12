@@ -90,7 +90,8 @@ public class NewsController  extends BaseController {
     //请求金十数据的快讯
     private void getJinShiNews(){
         String result = sendGet(jinshiUrl,null);
-        result = result.replaceAll("金十","MT4");
+        result = result.replaceAll("金十","美股指数APP");
+        result = result.replaceAll("Jin10.com","");
         JSONObject jsonObj = (JSONObject)JSON.parse(result);
         JSONArray infos = jsonObj.getJSONArray("infos");
         List<String[]> jinShiDataList = new ArrayList<>();
