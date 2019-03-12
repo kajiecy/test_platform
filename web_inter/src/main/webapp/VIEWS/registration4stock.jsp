@@ -54,7 +54,7 @@
 <body>
 <div>
     <div class="title">
-        欢迎来到 美股app 客户端，你将找到你的登录凭证。
+        欢迎来到 美股指数app 客户端，你将找到你的登录凭证。
     </div>
     <div class="content">
         <table>
@@ -75,7 +75,7 @@
             请安全地保管好这些信息！
         </div>
         <p>
-            现在您可以进行交易，分析报价和运行自动帮您交易的自动交易。注册 MQL5.com 访问
+            现在您可以进行交易，分析报价和运行自动帮您交易的自动交易。注册 美股指数app 访问
             交易信号，市场，自由职业者和虚拟主机服务。通过这些服务，你可以自动复制成功交易者的交易，
             从开发者们处购买或顶否交易 apps 和在虚拟平台副本每周全天候24小时的启动。
         </p>
@@ -84,11 +84,6 @@
             下载 IOS 和 Android 的移动应用程序，随时在全球任何地方持续交易，
         </p>
         <br>
-        <p>
-            MetaQuotes Software Core.
-            <a href="http://www.metaquotes.net">http://www.metaquotes.net</a>
-            <a href="mailto:support@metaquotes.net">support@metaquotes.net</a>
-        </p>
     </div>
     <div>
 
