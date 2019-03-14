@@ -46,6 +46,7 @@ public class NewsPushController extends BaseController{
         String author = data.getStringMust("author",  "作者不能为空");
         String secTitle = data.getStringMust("secTitle",  "副标题不能为空");
         String titleImg = data.getStringMust("titleImg",  "图片地址不能为空");
+        Integer isRecommend = data.getIntMust("isRecommend",  "推荐信息不能为空");
 
         News news = new News();
         news.setTitle(title);
@@ -54,6 +55,7 @@ public class NewsPushController extends BaseController{
         news.setCreateTime(new Date());
         news.setSecTitle(secTitle);
         news.setTitleImg(titleImg);
+        news.setIsRecommend(isRecommend);
         this.newsCore.save(news);
         //使用个推推送
         PushPioneer pushPioneer = new PushPioneer();
@@ -103,6 +105,7 @@ public class NewsPushController extends BaseController{
         String author = data.getStringMust("author",  "作者不能为空");
         String secTitle = data.getStringMust("secTitle",  "副标题不能为空");
         String titleImg = data.getStringMust("titleImg",  "图片地址不能为空");
+        Integer isRecommend = data.getIntMust("isRecommend",  "推荐信息不能为空");
 
         News news = new News();
         news.setId(id);
@@ -112,6 +115,7 @@ public class NewsPushController extends BaseController{
         news.setUpdateTime(new Date());
         news.setSecTitle(secTitle);
         news.setTitleImg(titleImg);
+        news.setIsRecommend(isRecommend);
         this.newsCore.update(news);
         return ResponseMap.success("success").result();
     }
