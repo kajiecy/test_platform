@@ -109,7 +109,7 @@
     <bean class="org.jsoncloud.project.mt4platform.runner.controller.NewsController" id="newsController"
           init-method="init"/>
     <task:scheduled-tasks>
-        <task:scheduled ref="newsController" method="getJinShiMessage" cron="0/5 * * * * ?"/>
+        <task:scheduled ref="newsController" method="getJinShiMessage" cron="0/10 * * * * ?"/>
     </task:scheduled-tasks>
 
 

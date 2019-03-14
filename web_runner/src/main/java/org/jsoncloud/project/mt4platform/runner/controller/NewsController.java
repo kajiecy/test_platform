@@ -22,14 +22,15 @@ import java.util.Map;
 public class NewsController  extends BaseController {
     private static final String huaerjieUrl  = "https://api-prod.wallstreetcn.com/apiv1/content/lives?channel=us-stock-channel&client=pc&limit=20&first_page=true&accept=live%2Cvip-live";
     private static final String jinshiUrl  = "https://partner-api.jin10.com/?max_id=0&count=50";
-
+    private static final String meiGangNews  = "https://api-ushk.jin10.com/flash?max_time=0&callback=__jp0";
 
     public void init() {
 
     }
     public void getJinShiMessage(){
-        getHuaErJieNews();
-        getJinShiNews();
+        this.getHuaErJieNews();
+        this.getJinShiNews();
+        this.getMeiGangNews();
     }
     //请求华尔街新闻的 美股快讯
     private void getHuaErJieNews(){
@@ -147,6 +148,52 @@ public class NewsController  extends BaseController {
             }
         }
 //        System.out.println(jinShiDataList);
+    }
+
+
+    private void getMeiGangNews(){
+        String result = sendGet(meiGangNews,null);
+        result = result.substring(50);
+        result = result.substring(0,result.length()-2);
+        JSONObject jsonObj = (JSONObject)JSON.parse(result);
+
+        JSONArray jsonArray = jsonObj.getJSONArray("data");
+
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject jsonObjectItem = jsonArray.getJSONObject(i);
+            if(jsonObjectItem.getInteger("type")==0){
+//                System.out.println(jsonObj);
+                String id = jsonObjectItem.getString("id");//新闻的id
+                String content = jsonObjectItem.getString("title_content");//资讯内容
+                String pic = jsonObjectItem.getString("pic");//资讯内容
+                /*
+                 * 先根据ID查询是否存在此条id的信息
+                 * 如果 没有 插入此条记录
+                 */
+                Map<String,Object> condition = getCondition();
+                condition.put("news_id",id);
+                List<Map<String, Object>> resultList = this.mybatisDao.selectMapList("NewsMapper.getNewsById", condition);
+
+
+                if(!(resultList!=null&&resultList.size()>0)){
+                    //向数据库中添加一条记录
+                    Map<String,Object> insertSource = getCondition();
+                    insertSource.put("news_id",id);
+                    insertSource.put("news_source","huaerjie");
+                    //去除所有的<a>标签
+                    content=content.replaceAll("<a[^>]*>[^>]*</a>", "");
+                    insertSource.put("content",content);
+                    if(pic!=null){
+                        insertSource.put("image_uris","[\"//image.jin10.com/"+pic+"\"]");
+                    }else {
+                        insertSource.put("image_uris","[]");
+                    }
+                    insertSource.put("score",0);
+                    insertSource.put("create_time",new Date());
+                    this.mybatisDao.insert("NewsMapper.addNewsOut",insertSource);
+                }
+            }
+        }
     }
 
     //封装httpClient的get请求
