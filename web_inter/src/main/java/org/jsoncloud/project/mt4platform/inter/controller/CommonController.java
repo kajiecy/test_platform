@@ -1,5 +1,8 @@
 package org.jsoncloud.project.mt4platform.inter.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.jsoncloud.framework.exception.ErrorEnum;
 import org.jsoncloud.framework.exception.ProjectException;
 import org.jsoncloud.framework.redis.code.RedisImgCodeManager;
@@ -23,6 +26,7 @@ import org.jsoncloud.project.mt4platform.base.Util.InterUtil;
 import org.jsoncloud.project.mt4platform.base.redis.UserRedis;
 import org.jsoncloud.project.mt4platform.base.tableenum.LoginTypeEnum;
 import org.jsoncloud.project.mt4platform.base.tableenum.VersionCodeEnum;
+import org.jsoncloud.project.mt4platform.dao.DictionaryMapper;
 import org.jsoncloud.project.mt4platform.dao.EmailMapper;
 import org.jsoncloud.project.mt4platform.dao.LoginMapper;
 import org.jsoncloud.project.mt4platform.dao.UserMapper;
@@ -30,9 +34,8 @@ import org.jsoncloud.project.mt4platform.inter.Constants;
 import org.jsoncloud.project.mt4platform.inter.core.UserCore;
 import org.jsoncloud.project.mt4platform.inter.smsutil.RedisSmsCodeManager2;
 import org.jsoncloud.project.mt4platform.inter.smsutil.SmsCodeManager;
-import org.jsoncloud.project.mt4platform.po.Email;
-import org.jsoncloud.project.mt4platform.po.Login;
-import org.jsoncloud.project.mt4platform.po.User;
+import org.jsoncloud.project.mt4platform.po.*;
+import org.jsoncloud.project.mt4platform.po.Dictionary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +54,7 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLConnection;
 import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -74,6 +78,8 @@ public class CommonController extends BaseController {
     private LoginMapper loginMapper;
     @Autowired
     private EmailMapper emailMapper;
+    @Autowired
+    private DictionaryMapper dictionaryMapper;
 
     @ResponseBody
     @RequestMapping("/getCodeToken.json")
@@ -674,5 +680,100 @@ public class CommonController extends BaseController {
         return ResponseMap.success("获取最新的版本")
                 .data("versionInfo", info)
                 .result();
+    }
+
+    /**
+     * 获取财经日历
+     *
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("getRiliJin10.json")
+    public Map<String, Object> getRiliJin10(HttpServletRequest request, HttpSession session) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+        SimpleDateFormat sdf2 = new SimpleDateFormat("MMdd");
+        Date nowDate = new Date();
+        String year = sdf.format(nowDate);
+        String dayFormat = sdf2.format(nowDate);
+        String result = sendGet("https://rili.jin10.com/datas/"+year+"/"+dayFormat+"/economics.json",null);
+        JSONArray jsonArray = (JSONArray) JSON.parseArray(result);
+        ArrayList<Map<String,Object>> resultList = new ArrayList<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject jsonObjectItem = jsonArray.getJSONObject(i);
+            Map<String,Object> mapItem = new HashMap<>();
+            mapItem.put("id",jsonObjectItem.getInteger("id"));
+            mapItem.put("countryImg","//cdn.jin10.com/assets/img/commons/flag/flash/"+jsonObjectItem.getString("country")+".png");
+            mapItem.put("time_show",jsonObjectItem.getInteger("star"));
+            mapItem.put("star",jsonObjectItem.getString("star"));
+            mapItem.put("tag",jsonObjectItem.getString("status_name"));
+            mapItem.put("title",jsonObjectItem.getString("title"));
+            mapItem.put("qianzhi",jsonObjectItem.getString("previous"));
+            mapItem.put("yuqi",jsonObjectItem.getString("consensus"));
+            mapItem.put("gongbu",jsonObjectItem.getString("actual"));
+            resultList.add(mapItem);
+        }
+        return ResponseMap.success("获取最新的版本")
+                .data("calendarDate", resultList)
+                .result();
+    }
+
+    /**
+     * 获取是否为审核状态
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("getAuditState.json")
+    public Map<String, Object> getAuditState(HttpServletRequest request, HttpSession session) {
+        Dictionary dictionary = dictionaryMapper.selectByPrimaryKey(1);
+        return ResponseMap.success("获取最新的版本")
+                .data("auditState", dictionary.getValue())
+                .result();
+    }
+
+
+    //封装httpClient的get请求
+    private static String sendGet(String url, String param) {
+        String result = "";
+        BufferedReader in = null;
+        try {
+
+            String urlNameString = url + "?" + param;
+            URL realUrl = new URL(urlNameString);
+            // 打开和URL之间的连接
+            URLConnection connection = realUrl.openConnection();
+            // 设置通用的请求属性
+            connection.setRequestProperty("accept", "*/*");
+            connection.setRequestProperty("user-agent","Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+            connection.setRequestProperty("connection", "Keep-Alive");
+            // 建立实际的连接
+            connection.connect();
+            // 获取所有响应头字段
+            Map<String, List<String>> map = connection.getHeaderFields();
+            // 遍历所有的响应头字段
+            for (String key : map.keySet()) {
+//                System.out.println(key + "--->" + map.get(key));
+            }
+            // 定义 BufferedReader输入流来读取URL的响应
+            in = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream(), "UTF-8"));
+            String line;
+            while ((line = in.readLine()) != null) {
+                result += line;
+            }
+        } catch (Exception e) {
+            System.out.println("发送GET请求出现异常！" + e);
+            e.printStackTrace();
+        }
+        // 使用finally块来关闭输入流
+        finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        }
+        return result;
     }
 }
